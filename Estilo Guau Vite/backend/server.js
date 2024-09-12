@@ -1,0 +1,857 @@
+const express = require('express');
+const mysql = require('mysql2');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const moment = require('moment');
+
+const app = express();
+const port = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Conexión a la base de datos
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '12345',
+  database: 'bdestiloguau'
+});
+
+connection.connect(error => {
+  if (error) throw error;
+  console.log("MySQL database connection established successfully");
+});
+
+// Configuración de Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'public', 'images');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Rutas
+app.get('/', (req, res) => {
+  res.send('Hello from the backend!');
+});
+
+///#Joel
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const encodedPassword = Buffer.from(password).toString('base64'); // Decodificar la contraseña (si está codificada)
+
+  const query = 'SELECT * FROM usuario WHERE email = ? AND password = ?';
+  connection.query(query, [email, encodedPassword], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      if (results.length > 0) {
+        // Usuario autenticado correctamente
+        res.status(200).json({ message: 'Login exitoso', user: results[0] });
+      } else {
+        // Credenciales incorrectas
+        res.status(401).json({ message: 'Credenciales incorrectas' });
+      }
+    }
+  });
+});
+app.post('/registro', (req, res) => {
+  const query = 'INSERT INTO usuario (idRol, nombre, apellido, email, password, fecha_creacion, foto) VALUES (?,?, ?, ?, ?, NOW(),?)';
+  const { idRol = 1, nombre, apellido, email, password } = req.body;
+  const encoded = Buffer.from(password).toString("base64");
+  const fotoPorDefecto = '1721157608571-logo.png';
+
+  connection.query(query, [idRol, nombre, apellido, email, encoded, fotoPorDefecto], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ message: "Usario Agreado" });
+    }
+  });
+});
+
+app.get('/usuariosget', (req, res) => {
+  const query = 'SELECT * FROM usuario';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: 'nop' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.get('/usuarioget/:idUsuario', (req, res) => {
+  const query = 'SELECT * FROM usuario WHERE idUsuario = ?;';
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+app.get('/usuarioget/:idUsuario', (req, res) => {
+  const query = 'SELECT * FROM usuario WHERE idUsuario = ?;';
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+app.get('/compras/:idUsuario', (req, res) => {
+  const query = `
+    SELECT
+    p.descripcion AS descripcion_producto,
+    p.precio,
+    p.foto,
+    t.talla  -- Agregamos la columna de talla
+FROM
+    compra c
+JOIN
+    producto p ON c.idProducto = p.idProducto
+JOIN
+    usuario u ON c.idUsuario = u.idUsuario
+JOIN
+    tallas t ON p.idTalla = t.idTalla  -- Hacemos el JOIN con la tabla de tallas
+WHERE
+    c.idUsuario = ?;
+  `;
+
+  // Ejecutar la consulta con el idUsuario proporcionado
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Compras no encontradas para este usuario' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+
+
+{/*app.put('/usuarioupdate/:idUsuario', (req, res) => {
+  const query = 'UPDATE usuario SET idRol=?, nombre=?, apellido=?, email=?, password=?, foto=? WHERE idUsuario = ?';
+  const {idRol, nombre, apellido, email, password, foto } = req.body;
+  const {idUsuario} = req.params;
+  const encodedPassword = Buffer.from(password).toString("base64");
+
+  connection.query(query, [idRol, nombre, apellido, email, encodedPassword, foto, idUsuario], (error, results) => {
+    if (error){
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({results});
+    }
+  });
+});*/}
+
+// Actualizar un usuario
+app.put('/usuarioupdate/:idUsuario', upload.single('foto'), (req, res) => {
+  const { idRol, nombre, apellido, email, password } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre del archivo de imagen guardado por Multer, si hay uno nuevo
+  const encodedPassword = password ? Buffer.from(password).toString("base64") : null;
+
+  // Construcción de la consulta de actualización
+  let updateQuery = 'UPDATE usuario SET idRol = ?, nombre = ?, apellido = ?, email = ?';
+  let queryParams = [idRol, nombre, apellido, email];
+
+  // Agregar la contraseña a la consulta si se proporciona
+  if (encodedPassword) {
+    updateQuery += ', password = ?';
+    queryParams.push(encodedPassword);
+  }
+
+  // Agregar la foto a la consulta si se proporciona
+  if (foto) {
+    updateQuery += ', foto = ?';
+    queryParams.push(foto);
+  }
+
+  updateQuery += ' WHERE idUsuario = ?';
+  queryParams.push(req.params.idUsuario);
+
+  console.log('Update Query:', updateQuery);
+  console.log('Query Params:', queryParams);
+
+  connection.query(updateQuery, queryParams, (error, results) => {
+    if (error) {
+      console.error('Error al ejecutar la consulta:', error);
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json({
+        idUsuario: req.params.idUsuario,
+        idRol,
+        nombre,
+        apellido,
+        email,
+        password: encodedPassword,
+        foto
+      });
+    }
+  });
+});
+
+app.delete('/usuariodelete/:idUsuario', (req, res) => {
+  const query = 'DELETE FROM usuario WHERE idUsuario= ?'
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json({ message: 'Usuario eliminado' });
+    }
+  });
+});
+///#JoelEnd
+//Obtener todos los registros
+app.get('/all-rol', (req, res) => {
+  const query = 'SELECT * FROM rol';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: 'nop' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+//Obtener registro por ID
+app.get('/id-rol', (req, res) => {
+  const query = 'SELECT * FROM rol WHERE idrol = ?;';
+  connection.query(query, [req.params.idrol], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Rol no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+//Crear un nuevo rol
+app.post('/new-rol', (req, res) => {
+  const query = 'INSERT INTO rol (rol) VALUES (?)';
+  const { rol } = req.body;
+  connection.query(query, [rol], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ id: results.insertId, rol });
+    }
+  });
+});
+
+//Actulizar regstro 
+app.put('/id-rol', (req, res) => {
+  const query = 'SELECT * FROM rol WHERE idrol = ?;';
+  connection.query(query, [req.params.idrol], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Rol no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+//Eliminar registro
+app.delete('/idrol', (req, res) => {
+  const query = 'DELETE FROM rol WHERE idrol= ?'
+  connection.query(query, [req.params.idrol], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Rol no encontrado' });
+    } else {
+      res.json({ message: 'Rol eliminado' });
+    }
+  });
+});
+
+//Ruta para obtener todas las compras
+app.get('/compras', (req, res) => {
+  const query = `
+SELECT
+    c.idCompra,
+    p.descripcion AS descripcion_producto,
+    p.precio,
+    p.foto,
+    t.talla AS talla,
+    c.cantidad_producto,
+    CONCAT(u.nombre, ' ', u.apellido) AS cliente
+FROM
+    compra c
+JOIN
+    producto p ON c.idProducto = p.idProducto
+JOIN
+    usuario u ON c.idUsuario = u.idUsuario
+JOIN
+    tallas t ON p.idTalla = t.idTalla
+ORDER BY
+    c.fecha_compra DESC
+  `;
+  // Ejecuta la consulta con el parámetro idCompra de la ruta
+  connection.query(query, [req.params.idCompra], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Compra no encontrada' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Ruta para obtener las compras recientes
+app.get('/clientes-recientes', (req, res) => {
+  const query = `
+    SELECT
+        u.nombre,
+        u.email AS correo,
+        u.foto
+    FROM
+        compra c
+    JOIN
+        usuario u ON c.idUsuario = u.idUsuario
+    ORDER BY
+        c.fecha_compra DESC
+    LIMIT 5;
+`;
+
+  // Ejecutar la consulta SQL
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error al ejecutar la consulta:', error);
+      res.status(500).json({ error: 'Error al obtener las compras recientes' });
+      return;
+    }
+    res.json(results); // Enviar resultados como JSON
+  });
+});
+
+
+
+
+//Pedro PERMISOS
+// Obtener todos los permisos
+app.get('/permisos-all', (req, res) => {
+  const query = 'SELECT * FROM permisos';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Obtener un permiso por ID
+app.get('/permisos/:id', (req, res) => {
+  const query = 'SELECT * FROM permisos WHERE id = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Permiso no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+// Crear un nuevo permiso
+app.post('/nuevoPermiso', (req, res) => {
+  const query = 'INSERT INTO permisos (permiso) VALUES (?)';
+  const { permiso } = req.body;
+  connection.query(query, [permiso], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ id: results.insertId, permiso });
+    }
+  });
+});
+
+// Actualizar un permiso
+app.put('/permisos/:id', (req, res) => {
+  const query = 'UPDATE permisos SET permiso = ? WHERE id = ?';
+  const { permiso } = req.body;
+  connection.query(query, [permiso, req.params.id], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Permiso no encontrado' });
+    } else {
+      res.json({ id: req.params.id, permiso });
+    }
+  });
+});
+
+// Eliminar un permiso
+app.delete('/permisos/:id', (req, res) => {
+  const query = 'DELETE FROM permisos WHERE id = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Permiso no encontrado' });
+    } else {
+      res.json({ message: 'Permiso eliminado' });
+    }
+  });
+});
+
+//Pedro TALLAS
+// Obtener todas las tallas
+app.get('/tallas', (req, res) => {
+  const query = 'SELECT * FROM tallas';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Obtener una talla por ID
+app.get('/tallas:id', (req, res) => {
+  const query = 'SELECT * FROM tallas WHERE idTalla = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Talla no encontrada' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+// Crear una nueva talla
+app.post('/talla-nueva', (req, res) => {
+  const { talla } = req.body;
+  const query = 'INSERT INTO tallas (talla) VALUES (?)';
+  connection.query(query, [talla], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ id: results.insertId, talla });
+    }
+  });
+});
+
+// Actualizar una talla
+app.put('/tallas/:id', (req, res) => {
+  const { talla } = req.body;
+  const query = 'UPDATE tallas SET talla = ? WHERE idTalla = ?';
+  connection.query(query, [talla, req.params.id], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Talla no encontrada' });
+    } else {
+      res.json({ id: req.params.id, talla });
+    }
+  });
+});
+
+// Eliminar una talla
+app.delete('/tallas/:id', (req, res) => {
+  const query = 'DELETE FROM tallas WHERE idTalla = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Talla no encontrada' });
+    } else {
+      res.json({ message: 'Talla eliminada' });
+    }
+  });
+});
+
+
+//Pedro PRODUCTOS
+// Obtener todos los productos
+app.get('/productos', (req, res) => {
+  const query = 'SELECT * FROM producto';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Obtener un producto por ID
+app.get('/productos/:id', (req, res) => {
+  const query = 'SELECT * FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+// Obtener un producto por ID
+app.get('/detalleproducto/:id', (req, res) => {
+  const query = 'SELECT * FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+
+//Agregar Producto
+app.post('/producto-nuevo', upload.single('foto'), (req, res) => {
+  const { sku, Marca, producto, precio, idTalla, descripcion } = req.body;
+  let foto = ''; // Inicializa foto como cadena vacía
+
+  // Verifica la presencia de req.file para asignar el nombre del archivo
+  if (req.file) {
+    foto = req.file.filename;
+  }
+
+  // Verifica que todos los campos necesarios estén presentes antes de la inserción
+  if (producto && sku && Marca && precio && idTalla && descripcion) {
+    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto], (error, results) => {
+      if (error) {
+        console.error('Error al agregar el producto:', error);
+        res.status(400).json({ message: 'Error al agregar el producto' });
+      } else {
+        const productId = results.insertId;
+        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto });
+      }
+    });
+  } else {
+    res.status(400).json({ message: 'Todos los campos son requeridos' });
+  }
+});
+
+// Actualizar un producto
+app.put('/productos/:id', upload.single('foto'), (req, res) => {
+  const { producto, sku, Marca, precio, idTalla, descripcion } = req.body;
+  const foto = req.file ? req.file.filename : null; // Nombre del archivo de imagen guardado por Multer, si hay uno nuevo
+  const updateQuery = foto
+    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ? WHERE idProducto = ?'
+    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ? WHERE idProducto = ?';
+  const queryParams = foto
+    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, req.params.id]
+    : [producto, sku, Marca, precio, idTalla, descripcion, req.params.id];
+  connection.query(updateQuery, queryParams, (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto });
+    }
+  });
+});
+
+// Eliminar un producto
+app.delete('/productos/:id', (req, res) => {
+  const query = 'DELETE FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ message: 'Producto eliminado' });
+    }
+  });
+});
+
+// Eliminar la imagen de un producto
+app.delete('/productos/:id/foto', (req, res) => {
+  const { id } = req.params;
+  const query = 'UPDATE producto SET foto = "" WHERE idProducto = ?'; // Cambiar a un valor vacío
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error(`Error al eliminar la imagen del producto con ID ${id}:`, error);
+      res.status(500).json({ message: 'Error interno del servidor al eliminar la imagen' });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ message: 'Imagen eliminada exitosamente' });
+    }
+  });
+});
+
+
+
+//Pedro RECIBOS
+// Obtener todos los recibos
+app.get('/recibos', (req, res) => {
+  const query = 'SELECT * FROM recibo';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Obtener un recibo por ID
+app.get('/recibos/:id', (req, res) => {
+  const query = 'SELECT * FROM recibo WHERE idRecibo = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Recibo no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+// Crear un nuevo recibo
+app.post('/recibo-nuevo', (req, res) => {
+  const { idUsuario } = req.body;
+  const query = 'INSERT INTO recibo (idUsuario) VALUES (?)';
+  connection.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ id: results.insertId, idUsuario });
+    }
+  });
+});
+
+// Actualizar un recibo
+app.put('/recibos/:id', (req, res) => {
+  const { idUsuario } = req.body;
+  const query = 'UPDATE recibo SET idUsuario = ? WHERE idRecibo = ?';
+  connection.query(query, [idUsuario, req.params.id], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Recibo no encontrado' });
+    } else {
+      res.json({ id: req.params.id, idUsuario });
+    }
+  });
+});
+
+// Eliminar un recibo
+app.delete('/recibos/:id', (req, res) => {
+  const query = 'DELETE FROM recibo WHERE idRecibo = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Recibo no encontrado' });
+    } else {
+      res.json({ message: 'Recibo eliminado' });
+    }
+  });
+});
+
+//Publicidad
+app.get('/no-comprado/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+  const query = `
+SELECT p.*
+FROM producto p
+LEFT JOIN compra c ON p.idProducto = c.idProducto AND c.idUsuario = ?
+WHERE c.idProducto IS NULL
+LIMIT 6;
+
+  `;
+  connection.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+//Dashboard
+//Ventas mensuales
+app.get('/ventas/mensuales', (req, res) => {
+  // Obtener el año y mes actual
+  const fechaActual = new Date();
+  const anioActual = fechaActual.getFullYear();
+  const mesActual = fechaActual.getMonth() + 1; // Los meses en JavaScript son base 0 (enero = 0), por lo que sumamos 1
+
+  const query = `
+    SELECT YEAR(fecha_compra) AS anio, MONTH(fecha_compra) AS mes, SUM(precio * cantidad_producto) AS total_ventas
+    FROM compra
+    JOIN producto ON compra.idProducto = producto.idProducto
+    WHERE YEAR(fecha_compra) = ? AND MONTH(fecha_compra) = ?
+    GROUP BY YEAR(fecha_compra), MONTH(fecha_compra)
+  `;
+
+  connection.query(query, [anioActual, mesActual], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Ventas de la semana
+app.get('/ventas/semana', (req, res) => {
+  const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
+  const finSemana = moment().endOf('week').format('YYYY-MM-DD');
+
+  const query = `
+    SELECT SUM(precio * cantidad_producto) AS total_ventas_semana
+    FROM compra
+    JOIN producto ON compra.idProducto = producto.idProducto
+    WHERE fecha_compra BETWEEN ? AND ?
+  `;
+
+  connection.query(query, [inicioSemana, finSemana], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Ventas del día
+app.get('/ventas/dia', (req, res) => {
+  const fechaHoy = moment().format('YYYY-MM-DD');
+
+  const query = `
+    SELECT SUM(precio * cantidad_producto) AS total_ventas_dia
+    FROM compra
+    JOIN producto ON compra.idProducto = producto.idProducto
+    WHERE fecha_compra = ?
+  `;
+
+  connection.query(query, [fechaHoy], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Ganancias mensuales Grafica
+app.get('/ganancias/mensuales', (req, res) => {
+  // Obtener la fecha actual y la fecha hace 6 meses
+  const fechaActual = moment(); // Fecha actual
+  const fechaInicio = moment().subtract(6, 'months'); // Fecha hace 6 meses
+
+  const query = `
+    SELECT YEAR(fecha_compra) AS anio, MONTH(fecha_compra) AS mes, SUM(precio * cantidad_producto) AS total_ganancias
+    FROM compra
+    JOIN producto ON compra.idProducto = producto.idProducto
+    WHERE fecha_compra BETWEEN ? AND ?
+    GROUP BY YEAR(fecha_compra), MONTH(fecha_compra)
+    ORDER BY anio, mes;
+  `;
+
+  connection.query(query, [fechaInicio.format('YYYY-MM-DD'), fechaActual.format('YYYY-MM-DD')], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.get('/mas-vendidos', (req, res) => {
+  const fechaActual = new Date();
+  const anioActual = fechaActual.getFullYear();
+  const mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11 en JavaScript
+
+  const query = `
+SELECT 
+    producto.producto AS nombre_producto, 
+    producto.descripcion, 
+    producto.precio, 
+    producto.foto,
+    SUM(compra.cantidad_producto) AS total_vendido
+FROM compra
+JOIN producto ON compra.idProducto = producto.idProducto
+WHERE YEAR(compra.fecha_compra) = ? AND MONTH(compra.fecha_compra) = ?
+GROUP BY producto.producto, producto.descripcion, producto.precio, producto.foto
+ORDER BY total_vendido DESC
+LIMIT 5;
+  `;
+
+  connection.query(query, [anioActual, mesActual], (error, results) => {
+    if (error) {
+      console.error('Error en la consulta:', error);
+      res.status(500).json({ message: 'Error en la consulta' });
+    } else {
+      console.log('Resultados de consulta:', results);
+
+      if (results.length === 0) {
+        res.status(404).json({ message: 'Productos no encontrados' });
+      } else {
+        res.json(results);
+      }
+    }
+  });
+});
+
+//Tienda
+app.post('/nueva-compra', (req, res) => {
+  const { idUsuario, idProducto, cantidad_producto } = req.body;
+  const fechaCompra = new Date().toISOString().slice(0, 10); // Obtener la fecha actual en formato YYYY-MM-DD
+
+  const query = 'INSERT INTO compra (idUsuario, idProducto, cantidad_producto, fecha_compra) VALUES (?, ?, ?, ?)';
+  connection.query(query, [idUsuario, idProducto, cantidad_producto, fechaCompra], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ id: results.insertId, idUsuario, idProducto, cantidad_producto, fechaCompra });
+    }
+  });
+});
+
+
+app.listen(3001, () => {
+  console.log(`Server is running on port: ${port}`);
+});
