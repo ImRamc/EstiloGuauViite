@@ -28,16 +28,22 @@ connection.connect(error => {
 });
 
 // Configuración de Multer
-const storage = multer.diskStorage({
+const storage = multer.diskStorage({  
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, 'public', 'images');
+    /*const uploadDir = path.join(process.cwd(), 'public', 'images');*/
+    
     if (!fs.existsSync(uploadDir)) {
+      
       fs.mkdirSync(uploadDir, { recursive: true });
     }
+
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
+   
     cb(null, Date.now() + '-' + file.originalname);
+    
   }
 });
 
@@ -499,6 +505,18 @@ app.delete('/tallas/:id', (req, res) => {
 });
 
 
+// Obtener todos las ofertas
+app.get('/all-ofertas', (req, res) => {
+  const query = 'SELECT * FROM ofertas';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
@@ -542,25 +560,35 @@ app.get('/detalleproducto/:id', (req, res) => {
 
 
 //Agregar Producto
-app.post('/producto-nuevo', upload.single('foto'), (req, res) => {
-  const { sku, Marca, producto, precio, idTalla, descripcion } = req.body;
-  let foto = ''; // Inicializa foto como cadena vacía
+app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
 
-  // Verifica la presencia de req.file para asignar el nombre del archivo
+  const {idUsuario, sku, Marca, producto, precio, idTalla, descripcion , idOferta,  fecha_ingreso,
+    cantidad} = req.body;
+  
+  let foto = ''; // Inicializa foto como cadena vacía
+  
+  /* Verifica la presencia de req.file para asignar el nombre del archivo
   if (req.file) {
     foto = req.file.filename;
-  }
+  }*/
+
+     // Si hay archivos (fotos), genera una cadena separada por comas con los nombres de los archivos
+     if (req.files && req.files.length > 0) {
+      foto = req.files.map(file => file.filename).join(','); // Une los nombres de los archivos con comas
+    }
+
 
   // Verifica que todos los campos necesarios estén presentes antes de la inserción
-  if (producto && sku && Marca && precio && idTalla && descripcion) {
-    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto], (error, results) => {
+  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad ) {
+    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
+    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad], (error, results) => {
+
       if (error) {
-        console.error('Error al agregar el producto:', error);
-        res.status(400).json({ message: 'Error al agregar el producto' });
+        console.error( error);
+        res.status(400).json({ message: 'Error ', error });
       } else {
         const productId = results.insertId;
-        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto });
+        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad });
       }
     });
   } else {
@@ -569,22 +597,31 @@ app.post('/producto-nuevo', upload.single('foto'), (req, res) => {
 });
 
 // Actualizar un producto
-app.put('/productos/:id', upload.single('foto'), (req, res) => {
-  const { producto, sku, Marca, precio, idTalla, descripcion } = req.body;
-  const foto = req.file ? req.file.filename : null; // Nombre del archivo de imagen guardado por Multer, si hay uno nuevo
+app.put('/productos/:id', upload.array('foto',4), (req, res) => {
+  //console.log(req.body)
+  const { producto, sku, Marca, precio, idTalla, descripcion, idOferta,  fecha_ingreso, cantidad, idUsuario} = req.body;
+  let foto = ''
+  console.log(req.files )
+  if (req.files && req.files.length > 0) {
+    
+    foto = req.files.map(file => file.filename).join(','); // Une los nombres de los archivos con comas
+  }
+  
   const updateQuery = foto
-    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ? WHERE idProducto = ?'
-    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ? WHERE idProducto = ?';
-  const queryParams = foto
-    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, req.params.id]
-    : [producto, sku, Marca, precio, idTalla, descripcion, req.params.id];
+    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ?,  idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=?  WHERE idProducto = ?'
+    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=? WHERE idProducto = ?';
+   // console.log(updateQuery)
+    const queryParams = foto
+    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id]
+    : [producto, sku, Marca, precio, idTalla, descripcion, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id];
+    console.log(queryParams)
   connection.query(updateQuery, queryParams, (error, results) => {
     if (error) {
       res.status(400).json({ message: error.message });
     } else if (results.affectedRows === 0) {
       res.status(404).json({ message: 'Producto no encontrado' });
     } else {
-      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto });
+      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta,  fecha_ingreso, cantidad, idUsuario });
     }
   });
 });

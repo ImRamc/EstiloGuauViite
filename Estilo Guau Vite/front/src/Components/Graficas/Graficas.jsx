@@ -1,83 +1,227 @@
+import React, {useState,useEffect } from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+} from 'chart.js';
 
-<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-  <div class="flex justify-between border-gray-200 border-b dark:border-gray-700 pb-3">
-    <dl>
-      <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Profit</dt>
-      <dd class="leading-none text-3xl font-bold text-gray-900 dark:text-white">$5,405</dd>
-    </dl>
-    <div>
-      <span class="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300">
-        <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
-        </svg>
-        Profit rate 23.5%
-      </span>
-    </div>
-  </div>
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-  <div class="grid grid-cols-2 py-3">
-    <dl>
-      <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Income</dt>
-      <dd class="leading-none text-xl font-bold text-green-500 dark:text-green-400">$23,635</dd>
-    </dl>
-    <dl>
-      <dt class="text-base font-normal text-gray-500 dark:text-gray-400 pb-1">Expense</dt>
-      <dd class="leading-none text-xl font-bold text-red-600 dark:text-red-500">-$18,230</dd>
-    </dl>
-  </div>
+const Graficas = () => {
+    const [ventasMensuales, setVentasMensuales] = useState([]);
+    const [ventasSemanales, setVentasSemanales] = useState(0);
+    const [ventasDiarias, setVentasDiarias] = useState(0);
 
-  <div id="bar-chart"></div>
-    <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
-      <div class="flex justify-between items-center pt-5">
-        
-        <button
-          id="dropdownDefaultButton"
-          data-dropdown-toggle="lastDaysdropdown"
-          data-dropdown-placement="bottom"
-          class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
-          type="button">
-          Last 6 months
-          <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-          </svg>
-        </button>
-        
-        <div id="lastDaysdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 90 days</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 6 months</a>
-              </li>
-              <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last year</a>
-              </li>
-            </ul>
+    const [anioActual, setAnioActual] = useState('');
+    const [mesActual, setMesActual] = useState('');
+
+    const [fechaInicioSemana, setFechaInicioSemana] = useState(null);
+    const [fechaFinSemana, setFechaFinSemana] = useState(null);
+
+    const obtenerFechaActual = () => {
+      const ahora = new Date();
+      const dia = ahora.getDate();
+      const mes = ahora.getMonth() + 1; // Los meses son base 0 en JavaScript
+      const anio = ahora.getFullYear();
+  
+      // Formatear la fecha como necesario (ejemplo: DD/MM/YYYY)
+      const fechaFormateada = `${dia}/${mes}/${anio}`;
+  
+      return fechaFormateada;
+    };
+
+      // Función para obtener ventas mensuales
+  const fetchVentasMensuales = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/ventas/mensuales');
+      setVentasMensuales(response.data);
+    } catch (error) {
+      console.error('Error fetching ventas mensuales:', error);
+    }
+  };
+
+    // Función para obtener ventas semanales
+    const fetchVentasSemanales = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/ventas/semana');
+        setVentasSemanales(response.data[0].total_ventas_semana || 0);
+      } catch (error) {
+        console.error('Error fetching ventas semanales:', error);
+      }
+    };
+
+      // Función para obtener ventas diarias
+  const fetchVentasDiarias = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/ventas/dia');
+      setVentasDiarias(response.data[0].total_ventas_dia || 0);
+    } catch (error) {
+      console.error('Error fetching ventas diarias:', error);
+    }
+  };
+
+    // Llamar a las funciones al cargar el componente
+    useEffect(() => {
+      fetchVentasMensuales();
+      fetchVentasSemanales();
+      fetchVentasDiarias();
+    }, []);
+
+
+  
+    useEffect(() => {
+      const fechaActual = new Date();
+      const anio = fechaActual.getFullYear();
+      const mes = fechaActual.toLocaleString('default', { month: 'long' }); // Obtener nombre del mes
+  
+      setAnioActual(anio.toString());
+      setMesActual(mes);
+    }, []);
+
+    const [productosMasVendidos, setProductosMasVendidos] = useState([]);
+
+    useEffect(() => {
+      const fetchProductosMasVendidos = async () => {
+        try {
+          const response = await axios.get('http://localhost:3001/mas-vendidos');
+          console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
+          setProductosMasVendidos(response.data);
+        } catch (error) {
+          console.error('Error al obtener productos más vendidos:', error);
+        }
+      };
+    
+      fetchProductosMasVendidos();
+    }, []);
+
+
+  useEffect(() => {
+    // Calcula las fechas de inicio y fin de la semana actual
+    const inicioSemana = moment().startOf('week').format('DD/MM/YYYY');
+    const finSemana = moment().endOf('week').format('DD/MM/YYYY');
+    
+    setFechaInicioSemana(inicioSemana);
+    setFechaFinSemana(finSemana);
+  }, []);
+  
+
+//#region  Ganancias por mes
+    const [lineData, setLineData] = useState({
+      labels: [],
+      datasets: [
+        {
+          label: 'Ganancias',
+          data: [],
+          fill: false,
+          borderColor: 'rgba(0, 0, 0, 1)',
+          tension: 0.1,
+        },
+      ],
+    });
+  
+    useEffect(() => {
+      const fetchGananciasMensuales = async () => {
+        try {
+          const response = await axios.get('http://localhost:3001/ganancias/mensuales');
+          const data = response.data;
+  
+          const labels = data.map(item => `${item.mes}/${item.anio}`);
+          const ganancias = data.map(item => item.total_ganancias);
+  
+          setLineData({
+            labels: labels,
+            datasets: [
+              {
+                ...lineData.datasets[0],
+                data: ganancias,
+              },
+            ],
+          });
+        } catch (error) {
+          console.error('Error fetching ganancias mensuales:', error);
+        }
+      };
+  
+      fetchGananciasMensuales();
+    }, []);
+  
+
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Últimos 6 meses',
+      },
+    },
+  };
+  //#endregion
+
+  return (
+    <div className="container mx-auto pt-28 px-32 p-4 grid grid-cols-3 gap-4">
+    <h1 className="text-start text-4xl font-bold">Resumen de ganancias</h1>
+      <div className="col-span-3 grid grid-cols-3 gap-4">
+        <div className="p-4 bg-custom rounded-lg shadow-xl text-center">
+          <h2 className="my-2 text-start text-xl font-semibold">Ventas por Mes</h2>
+          <p className="m-2 text-start text-3xl font-bold">{ventasMensuales.length > 0 ? `$${ventasMensuales.reduce((total, venta) => total + venta.total_ventas, 0).toFixed(2)}` : '$0.00'}</p>
+          <p className="m-2 text-start text-sm text-green-700">Año: {anioActual} Mes: {mesActual} </p>
         </div>
-        <a
-          href="#"
-          class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
-          Revenue Report
-          <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-          </svg>
-        </a>
+        <div className="p-4 bg-custom rounded-lg shadow-xl text-center">
+          <h2 className="my-2 text-start text-xl font-semibold">Ventas de la Semana</h2>
+          <p className="m-2 text-start text-3xl font-bold">${ventasSemanales.toFixed(2)}</p>
+          <p className="text-start text-sm text-green-700">Semana del: {fechaInicioSemana && fechaFinSemana ? `${fechaInicioSemana} al ${fechaFinSemana}` : 'Cargando...'}</p>
+        </div>
+        <div className="p-4 bg-custom rounded-lg shadow-xl text-center">
+          <h2 className="my-2 text-start text-xl font-semibold">Ventas del Día</h2>
+          <p className="m-2 text-start text-3xl font-bold">${ventasDiarias.toFixed(2)}</p>
+          <p className="text-start text-sm text-green-700">Fecha: {obtenerFechaActual()}</p>
+        </div>
+      </div>
+      <div className="col-span-2 p-4 bg-custom rounded-lg shadow-xl">
+      <h2>Ganancias por mes</h2>
+        <Line data={lineData} options={lineOptions} />
+      </div>
+
+      <div className="p-4 bg-custom rounded-lg shadow-xl">
+        <h2 className="text-xl font-semibold">Artículos más vendidos</h2>
+        <div className="mt-4">
+        {productosMasVendidos.map((producto, index) => (
+          <div key={index} className="flex flex-row  mb-4">
+            <img src={`http://localhost:3001/images/${producto.foto}`} 
+                      alt="" className=" h-28 rounded-full p-3" />
+            <p className=" flex flex-col text-lg font-bold mt-2">{producto.nombre_producto}
+            <span className='text-lg font-light mt-2'> {producto.descripcion}</span>
+            <span className='text-lg font-light mt-2'> ${producto.precio}</span>
+            </p>
+            
+          </div>
+        ))}
+        {productosMasVendidos.length === 0 && <p>No hay productos vendidos aún.</p>}
+        </div>
       </div>
     </div>
-</div>
-
-
-
+  );
+};
+export default Graficas;
