@@ -37,7 +37,7 @@ const componente = ({ isOpen, toggleSidebar }) => {
             <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
             </Link>
 
-            <Link to="">            
+            <Link to="/usuarios">            
           <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
             Usuarios
           </Sidebar.Item>

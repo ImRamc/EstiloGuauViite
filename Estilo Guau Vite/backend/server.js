@@ -90,7 +90,7 @@ app.post('/registro', (req, res) => {
 });
 
 app.get('/usuariosget', (req, res) => {
-  const query = 'SELECT * FROM usuario';
+  const query = 'SELECT * FROM usuario join rol';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: 'nop' });
@@ -248,7 +248,7 @@ app.get('/all-rol', (req, res) => {
 });
 
 //Obtener registro por ID
-app.get('/id-rol', (req, res) => {
+app.get('/id-rol/:idrol', (req, res) => {
   const query = 'SELECT * FROM rol WHERE idrol = ?;';
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -275,7 +275,7 @@ app.post('/new-rol', (req, res) => {
 });
 
 //Actulizar regstro 
-app.put('/id-rol', (req, res) => {
+app.put('/id-rol/:idrol', (req, res) => {
   const query = 'SELECT * FROM rol WHERE idrol = ?;';
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -289,7 +289,7 @@ app.put('/id-rol', (req, res) => {
 });
 
 //Eliminar registro
-app.delete('/idrol', (req, res) => {
+app.delete('/id-rol/:idrol', (req, res) => {
   const query = 'DELETE FROM rol WHERE idrol= ?'
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -842,17 +842,17 @@ app.get('/mas-vendidos', (req, res) => {
   const anioActual = fechaActual.getFullYear();
   const mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11 en JavaScript
 
-  const query = `
-SELECT 
+  const query = `SELECT 
     producto.producto AS nombre_producto, 
     producto.descripcion, 
     producto.precio, 
-    producto.foto,
+    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
     SUM(compra.cantidad_producto) AS total_vendido
 FROM compra
 JOIN producto ON compra.idProducto = producto.idProducto
-WHERE YEAR(compra.fecha_compra) = ? AND MONTH(compra.fecha_compra) = ?
-GROUP BY producto.producto, producto.descripcion, producto.precio, producto.foto
+WHERE YEAR(compra.fecha_compra) = ? 
+  AND MONTH(compra.fecha_compra) = ?
+GROUP BY producto.producto, producto.descripcion, producto.precio, primera_foto
 ORDER BY total_vendido DESC
 LIMIT 5;
   `;

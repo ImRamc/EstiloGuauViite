@@ -7,7 +7,11 @@ import Sidebar from '../../Components/Sidebar/Sidebar';
 
 
 const EditarProducto = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Cambia el estado inicial según tus necesidades
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const { id } = useParams(); // Extraer el ID del producto desde la URL
  
@@ -136,7 +140,8 @@ const EditarProducto = () => {
 
   return (
     <div className="carrito-page flex flex-col min-h-screen">
-       <Sidebar />
+       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+       <div className={`flex-1 ml-${sidebarOpen ? '96' : '64'} transition-margin duration-300 ease-in-out`}></div>
       <Navbar />
       <div className="carrito-container mx-4 my-8 flex-1 mt-10">
         <h2 className="pl-10 text-lg font-bold mb-4 ml-4 mt-20 text-left">Editar Producto</h2>

@@ -6,11 +6,6 @@ import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 const Productos = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true); // Cambia el estado inicial según tus necesidades
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
 
   const [productos, setProductos] = useState([]);
 

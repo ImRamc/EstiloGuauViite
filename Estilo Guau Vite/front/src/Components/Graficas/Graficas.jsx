@@ -103,6 +103,7 @@ const Graficas = () => {
         try {
           const response = await axios.get('http://localhost:3001/mas-vendidos');
           console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
+
           setProductosMasVendidos(response.data);
         } catch (error) {
           console.error('Error al obtener productos más vendidos:', error);
@@ -209,8 +210,8 @@ const Graficas = () => {
         <div className="mt-4">
         {productosMasVendidos.map((producto, index) => (
           <div key={index} className="flex flex-row  mb-4">
-            <img src={`http://localhost:3001/images/${producto.foto}`} 
-                      alt="" className=" h-28 rounded-full p-3" />
+            <img src={`http://localhost:3001/images/${producto.primera_foto}`}
+                      alt="" className=" h-32 p-3" />
             <p className=" flex flex-col text-lg font-bold mt-2">{producto.nombre_producto}
             <span className='text-lg font-light mt-2'> {producto.descripcion}</span>
             <span className='text-lg font-light mt-2'> ${producto.precio}</span>
