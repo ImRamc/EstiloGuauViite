@@ -87,7 +87,7 @@ const PerfilUsuario = () => {
       </div>
 
       <div className="flex-row flex justify-right pt-4">
-        <p className="text-start font-roboto font-semibold text-5xl ml-10">Últimas compras</p>
+        <p className="text-start font-roboto font-semibold text-5xl ml-10 pb-5">Últimas compras</p>
       </div>
 
       {/* Aquí debes mostrar las compras, si las tienes disponibles en el estado `compras` */}

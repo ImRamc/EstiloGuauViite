@@ -28,14 +28,14 @@ function Landing() {
 
 
       <div className="flex items-center bg-black justify-between">
-  <div className="text-white bg-black text-center mx-auto max-w-screen-xl">
-    <h2 className="text-6xl mb-8">CAMINANDO</h2>
-    <h2 className="text-6xl mb-8">CON</h2>
-    <h2 className="text-6xl mb-8">ESTILO</h2>
+  <div className="text-white bg-black text-center  mx-auto max-w-screen-xl">
+    <h2 className="text-7xl mb-8 font-bold pr-24 pb-8">CAMINANDO</h2>
+    <h2 className="text-7xl mb-8 font-bold pr-24 pb-8">CON</h2>
+    <h2 className="text-7xl mb-8 font-bold pr-24 pb-8">ESTILO</h2>
   </div>
-  <div className="image-section py-12 px-60 bg-black bg-opacity-100">
+  <div className="image-section bg-black bg-opacity-100">
     <div className="image-content flex items-center justify-end">
-      <img className="h-imagen2-2x1" src={PerritoCapucha} alt="" />
+      <img className="h-auto" src={PerritoCapucha} alt="" />
     </div>
   </div>
 </div>

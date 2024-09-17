@@ -2,7 +2,8 @@ import React , { useContext }from "react";
 import { UserContext } from '../../Context/UserContext';
 import { Disclosure, Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { Bars3Icon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import {ShoppingCartIcon , ShoppingBagIcon } from '@heroicons/react/24/solid';
+import { Bars3Icon , MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import './Navbar.css';
 
 const navigation = [
@@ -34,8 +35,17 @@ const NavbarLanding = () => {
                 <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                   {/* Logo */}
                   <Link to="/">
-                  <img className="pr-7 block h-20 w-auto" src="images/Logo.png" alt="" />
-                  </Link>                
+                  <img className=" block h-20 w-auto" src="images/Logo.png" alt="" />
+                  </Link> 
+                  {/* search button */}
+                  <Link to="/Tienda">
+                    <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white px-2">
+                      <span className="sr-only">Open user menu</span>
+                      <MagnifyingGlassIcon className="h-9 w-9 text-red-500" aria-hidden="true"  strokeWidth={3}  />
+                    </button>
+                    </Link>
+
+
 
                   {/* Encabezado */}
                   <div className="text-center flex-grow">
@@ -48,19 +58,26 @@ const NavbarLanding = () => {
                   <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     {/* Cart button */}
                     <Link to="/Tienda">
-                    <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white px-2">
+                    <button className="relative flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white px-2">
                       <span className="sr-only">Open user menu</span>
-                      <ShoppingBagIcon className="h-8 w-8 text-red-500" aria-hidden="true" />
+                      <ShoppingCartIcon className="h-9 w-9 text-red-500" aria-hidden="true" />
+                    </button>
+                    </Link>
+                    {/* Shop button */}
+                    <Link to="/Tienda">
+                    <button className="relative flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
+                      <span className="sr-only">Open user menu</span>
+                      <ShoppingBagIcon className="h-9 w-9 text-red-500" aria-hidden="true" />
                     </button>
                     </Link>
 
                     {/* Profile dropdown */}
-                    <Menu as="div" className="ml-3 relative">
-                      <Menu.Button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white px-2">
+                    <Menu as="div" className="ml-2 relative">
+                      <Menu.Button className=" relative flex text-sm  focus:outline-none focus:ring focus:ring-red-600">
                         <span className="sr-only">Open user menu</span>
-                        <Bars3Icon className="h-8 w-8 text-red-500" aria-hidden="true" />
+                        <Bars3Icon className="h-9 w-9 text-red-500  "  aria-hidden="true"  strokeWidth={3} />
                       </Menu.Button>
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="origin-top-right absolute right-0 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="py-1">
                           {/* Mostrar opciones dependiendo del estado de autenticación */}
                           {idUsuario ? (

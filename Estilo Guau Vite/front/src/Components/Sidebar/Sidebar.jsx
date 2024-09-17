@@ -1,47 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaChartBar, FaBox } from 'react-icons/fa';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { Navbar, Sidebar } from "flowbite-react";
+import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiDocumentText ,HiReceiptTax ,HiTicket   } from "react-icons/hi";
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const componente = ({ isOpen, toggleSidebar }) => {
   return (
-    <>
-      <div className={`pt-20 h-screen fixed top-0 left-0 bg-white text-black shadow-lg flex flex-col transition-transform duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
-        <div className={`flex items-center justify-center h-20 border-b border-gray-700 ${isOpen ? 'block' : 'hidden'}`}>
-          <h2 className="text-2xl font-bold font-roboto">Panel Administrador</h2>
-        </div>
-        <ul className="flex-1 space-y-2">
-           
-           <li className="flex items-center p-2 rounded-lg hover:bg-custom">
-            <FaChartBar className="pl-4 w-10" />
-            {isOpen && <Link to="/dashboard" className="font-roboto text-medium block w-full">Dashboard</Link>}
-          </li>
-          <li className="flex items-center p-2 rounded-lg hover:bg-custom">
-            <FaShoppingCart className="pl-4 w-10" />
-            {isOpen && <Link to="/compras" className="font-roboto text-medium block w-full">Compras</Link>}
-          </li>
-         
-          <li className="flex items-center p-2 rounded-lg hover:bg-custom">
-            <FaBox className="pl-4 w-10" />
-            {isOpen && <Link to="/productos" className="font-roboto text-medium block w-full">Productos</Link>}
-          </li>
+    
+    <Sidebar aria-label="Sidebar with multi-level dropdown example">
+     
+      <div className="pt-32 h-screen fixed top-0 left-1 bg-white text-black shadow-2xl w-56 ">
+        <Sidebar.Items >
+        <Sidebar.ItemGroup >
+          <Link to="/dashboard">
+          <Sidebar.Item href="#" icon={HiChartPie} className='hover:bg-custom'>
+            Dashboard
+          </Sidebar.Item>
+          </Link>
 
-          <li className="flex items-center p-2 rounded-lg hover:bg-custom">
-            <FaBox className="pl-4 w-10" />
-            {isOpen && <Link to="/cupones" className="font-roboto text-medium block w-full">Cupones</Link>}
-          </li>
-        </ul>
-        {/* Aquí puedes agregar más elementos del sidebar según tu aplicación */}
+          <Link to="/productos">
+            <Sidebar.Item icon={HiShoppingBag} className='hover:bg-custom'>
+              Productos
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/compras">
+            <Sidebar.Item icon={HiDocumentText} className='hover:bg-custom'>
+              Ventas
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/compras">
+            <Sidebar.Item icon={HiReceiptTax } className='hover:bg-custom'>Ofertas</Sidebar.Item>
+            </Link>
+
+            <Link to="/compras" >
+            <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
+            </Link>
+
+            <Link to="">            
+          <Sidebar.Item icon={HiUser} className='hover:bg-custom'>
+            Usuarios
+          </Sidebar.Item>
+            </Link>
+            
+        {/*<Sidebar.Collapse icon={HiShoppingBag} label=" Tienda">
+
+                  </Sidebar.Collapse>
+
+            <Sidebar.Item icon={HiInbox}>
+                  Inbox
+                </Sidebar.Item>*/}
+                {/*<Sidebar.Item icon={HiShoppingBag}>
+                  
+          </Sidebar.Item>
+          <Sidebar.Item icon={HiArrowSmRight}>
+            Sign In
+          </Sidebar.Item>
+          <Sidebar.Item icon={HiTable}>
+            Sign Up
+          </Sidebar.Item>*/}
+        </Sidebar.ItemGroup>
+      </Sidebar.Items>
       </div>
-
-      <button
-        onClick={toggleSidebar}
-        className={`fixed top-1/2 left-${isOpen ? '64' : '16'} transform -translate-y-1/2 text-black p-2 rounded-full shadow-lg hover:bg-custom focus:outline-none`}
-      >
-        {isOpen ? <MdChevronRight className="h-6 w-6" /> : <MdChevronLeft className="h-6 w-6" />}
-      </button>
-    </>
+      
+    </Sidebar>
+    
   );
 };
 
-export default Sidebar;
+export default componente;

@@ -90,9 +90,9 @@ function Tienda() {
   return (
     <div className="pt-10 Store flex flex-col items-center min-h-screen px-8">
       <Navbar />
-      <header className="w-full mt-8">
+      <header className="w-full mt-12">
         <div className="flex justify-between items-center p-4">
-          <h1 className="text-3xl font-bold">Tienda</h1>
+          <h1 className="text-3xl font-bold"></h1>
         </div>
       </header>
       <div className="flex justify-center items-start w-full flex-1 mt-8">
@@ -118,15 +118,19 @@ function Tienda() {
                alt="Producto" 
               className="w-64 mx-auto mb-6"               
               />
+              <Link to={`/detalleproducto/${product.idProducto}`}>
               <h2 className="text-xl font-semibold mb-2">{product.descripcion}</h2>
+              </Link>
               <p className="text-lg mb-4">${product.precio.toFixed(2)}</p>
               <div className="flex justify-between items-center">
+             
+              
               <Link to={`/detalleproducto/${product.idProducto}`}>
                 <button 
                   onClick={() => handleProductClick(product.idProducto)}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mr-2"
+                  className="bg-custom text-black py-2 px-4 rounded hover:bg-second"
                 >
-                  Ver Detalles
+                  Agregar al carrito
                 </button>
               </Link>
 
@@ -136,7 +140,7 @@ function Tienda() {
                   style={{ width: '40px', height: '40px' }}
                 >
                   <svg
-                    className={`w-[24px] h-[24px] ${favorites.includes(product.id) ? 'text-red-500' : 'text-gray-800 dark:text-white'}`}
+                    className={`w-[24px] h-[24px] ${favorites.includes(product.idProducto) ? 'text-red-500' : 'text-gray-800 dark:text-white'}`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
                     viewBox="0 0 24 24"

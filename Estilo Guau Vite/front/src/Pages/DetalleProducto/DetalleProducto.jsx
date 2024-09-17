@@ -3,7 +3,7 @@ import Navbar from "../../Components/Navbar/Navbar";
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { UserContext  } from '../../Context/UserContext';
+import { UserContext } from '../../Context/UserContext';
 import { Link } from 'react-router-dom';
 
 
@@ -137,8 +137,9 @@ const DetalleProducto = () => {
 
   return(
     <div className="flex flex-col p-4 pt-28 items-center justify-center">
-        <Navbar/>
+        
         <div className="flex flex-row items-center w-full rounded shadow p-4 justify-center">
+        <Navbar/>
         <div className="flex flex-col">
         {/**<img src={PerritoCapucha} alt="Product" className="w-28 h-28 m-5" />
         <img src={PerritoCapucha} alt="Product" className="w-28 h-28 m-5" />
@@ -181,12 +182,23 @@ const DetalleProducto = () => {
         <p className="font-roboto text-start text-sm old-price line-through text-red-500">$1200.99</p>
         <p className="font-roboto text-start text-2xl new-price text-green-500 my-4">${producto.precio}</p>
         
-        <button
+        <div className="flex items-start">
+          <button
               onClick={handleAddToCart}
-              className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4"
+              className="mr-6 add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second"
             >
               Comprar
             </button>
+
+        <button
+              onClick={handleAddToCart}
+              className="add-to-cart font-roboto font-bold bg-custom text-black p-3 mt-4 hover:bg-second"
+            >
+              Agregar al carrito
+            </button>
+
+        </div>
+        
       </div>
     </div>
 

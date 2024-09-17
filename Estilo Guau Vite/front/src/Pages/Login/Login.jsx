@@ -95,7 +95,7 @@ const Login = () => {
            </div>
            
            <div className="form-group flex flex-col">
-              <button className="bg-custom w-auto text-roboto font-bold m-5 p-2" 
+              <button className="bg-custom w-auto text-roboto font-bold m-5 p-2 hover:bg-second" 
               onClick={iniciar}>Iniciar sesón</button>  
 
               <label className="redirectregister">¿Aún no tienes cuenta?

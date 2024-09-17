@@ -149,8 +149,10 @@ export const FormUsuario = () =>{
             value={usuario.password}
             onChange={handleChange}
             placeholder="Ingrese la nueva contraseña (opcional)"
+            disabled
           />
         </div>
+        <label className="text-roboto text-1xl font-medium text-left text-blue-500">¿Desea cambiar su contraseña?</label>
       </div>
 
       <div className="flex flex-col pt-32 items-center justify-center px-10">
