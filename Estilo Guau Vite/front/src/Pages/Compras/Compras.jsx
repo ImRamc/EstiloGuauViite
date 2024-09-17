@@ -69,7 +69,7 @@ const Compras = () => {
 
                                     <td className="flex flex-row p-2 px-20 border-collapse border border-gray-300">
                                     <img src={`http://localhost:3001/images/${compra.foto}`} 
-                                    alt="" className=" h-28 rounded-full p-3" />
+                                    alt="" className=" h-28 p-3" />
                                     <div className="flex flex-col" >
                                     <span>{compra.descripcion_producto}</span>
                                     <span className="font-light">Talla: {compra.talla}</span></div>
@@ -91,7 +91,7 @@ const Compras = () => {
                                    
                                     <td className="flex flex-row text-start p-2 font-roboto border-collapse border border-gray-400">
                                     <img src={`http://localhost:3001/images/${cliente.foto}`} 
-                                    className=" h-28 rounded-full p-3"></img>
+                                    className="h-32 p-3"></img>
                                         <div className="flex flex-col">
                                         <span className="font-medium">{cliente.nombre}</span>
                                         <span className="ml-4 text-xs">{cliente.correo}</span>

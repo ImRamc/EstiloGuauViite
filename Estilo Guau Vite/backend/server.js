@@ -54,6 +54,7 @@ app.get('/', (req, res) => {
   res.send('Hello from the backend!');
 });
 
+
 ///#Joel
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
@@ -89,8 +90,25 @@ app.post('/registro', (req, res) => {
   });
 });
 
+app.post('/new-user',upload.single('foto'), (req, res) => {
+  console.log('hola')
+
+  const { idRol, nombre, apellido, email, password,fecha_creacion } = req.body;
+  let foto='1721157608571-logo.png'
+  const encoded = Buffer.from(password).toString("base64");
+  const query = 'INSERT INTO usuario (idRol, nombre, apellido, email, password, fecha_creacion,foto) VALUES (?,?, ?, ?, ?, ?,?)';
+
+  console.log(req.body)
+  connection.query(query, [idRol, nombre, apellido, email, encoded,fecha_creacion, foto], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ message: "Usuario agregado" });
+    }
+  });
+});
 app.get('/usuariosget', (req, res) => {
-  const query = 'SELECT * FROM usuario';
+  const query = 'SELECT * FROM usuario join rol';
   connection.query(query, (error, results) => {
     if (error) {
       res.status(500).json({ message: 'nop' });
@@ -178,17 +196,10 @@ WHERE
 app.put('/usuarioupdate/:idUsuario', upload.single('foto'), (req, res) => {
   const { idRol, nombre, apellido, email, password } = req.body;
   const foto = req.file ? req.file.filename : null; // Nombre del archivo de imagen guardado por Multer, si hay uno nuevo
-  const encodedPassword = password ? Buffer.from(password).toString("base64") : null;
 
   // Construcción de la consulta de actualización
   let updateQuery = 'UPDATE usuario SET idRol = ?, nombre = ?, apellido = ?, email = ?';
   let queryParams = [idRol, nombre, apellido, email];
-
-  // Agregar la contraseña a la consulta si se proporciona
-  if (encodedPassword) {
-    updateQuery += ', password = ?';
-    queryParams.push(encodedPassword);
-  }
 
   // Agregar la foto a la consulta si se proporciona
   if (foto) {
@@ -215,7 +226,7 @@ app.put('/usuarioupdate/:idUsuario', upload.single('foto'), (req, res) => {
         nombre,
         apellido,
         email,
-        password: encodedPassword,
+        password,
         foto
       });
     }
@@ -248,7 +259,7 @@ app.get('/all-rol', (req, res) => {
 });
 
 //Obtener registro por ID
-app.get('/id-rol', (req, res) => {
+app.get('/id-rol/:idrol', (req, res) => {
   const query = 'SELECT * FROM rol WHERE idrol = ?;';
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -275,7 +286,7 @@ app.post('/new-rol', (req, res) => {
 });
 
 //Actulizar regstro 
-app.put('/id-rol', (req, res) => {
+app.put('/id-rol/:idrol', (req, res) => {
   const query = 'SELECT * FROM rol WHERE idrol = ?;';
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -289,7 +300,7 @@ app.put('/id-rol', (req, res) => {
 });
 
 //Eliminar registro
-app.delete('/idrol', (req, res) => {
+app.delete('/id-rol/:idrol', (req, res) => {
   const query = 'DELETE FROM rol WHERE idrol= ?'
   connection.query(query, [req.params.idrol], (error, results) => {
     if (error) {
@@ -842,17 +853,17 @@ app.get('/mas-vendidos', (req, res) => {
   const anioActual = fechaActual.getFullYear();
   const mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11 en JavaScript
 
-  const query = `
-SELECT 
+  const query = `SELECT 
     producto.producto AS nombre_producto, 
     producto.descripcion, 
     producto.precio, 
-    producto.foto,
+    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
     SUM(compra.cantidad_producto) AS total_vendido
 FROM compra
 JOIN producto ON compra.idProducto = producto.idProducto
-WHERE YEAR(compra.fecha_compra) = ? AND MONTH(compra.fecha_compra) = ?
-GROUP BY producto.producto, producto.descripcion, producto.precio, producto.foto
+WHERE YEAR(compra.fecha_compra) = ? 
+  AND MONTH(compra.fecha_compra) = ?
+GROUP BY producto.producto, producto.descripcion, producto.precio, primera_foto
 ORDER BY total_vendido DESC
 LIMIT 5;
   `;
