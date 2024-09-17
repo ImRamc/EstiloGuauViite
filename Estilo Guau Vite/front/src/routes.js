@@ -13,6 +13,10 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import DetalleProducto from './Pages/DetalleProducto/DetalleProducto';
 import PerfilUsuario from './Pages/PerfilUsuario/PerfilUsuario';
 import FormUs from './Pages/PerfilUsuario/FormUsuario';
+import Usuarios from './Pages/Usuarios/Usuarios';
+import FormularioUsuario from './Pages/Usuarios/formulariousuario';
+import EditarUsuario from './Pages/Usuarios/EditarUsuario';
+
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -59,10 +63,30 @@ const RoutesComponent = () => {
           }
         />
         <Route
+          path="/Usuarios"
+          element={
+            idRol && idRol === 2 ? (
+              <Usuarios />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
           path="/productos/formulario"
           element={
             idRol && idRol === 2 ? (
               <FormularioProducto />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+                <Route
+          path="/usuarios/formulario"
+          element={
+            idRol && idRol === 2 ? (
+              <FormularioUsuario />
             ) : (
               <Navigate to="/Login" />
             )
@@ -73,6 +97,16 @@ const RoutesComponent = () => {
           element={
             idRol && idRol === 2 ? (
               <EditarProducto />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/usuarios/editar/:id"
+          element={
+            idRol && idRol === 2 ? (
+              <EditarUsuario />
             ) : (
               <Navigate to="/Login" />
             )
