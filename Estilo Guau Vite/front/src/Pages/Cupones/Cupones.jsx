@@ -44,7 +44,7 @@ const Cupones = () => {
 
   return (
     <div className="">
-      <div className="px-20 carrito-page flex flex-col min-h-screen shadow-lg">
+      <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
         <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
         <div className={`flex-1 ml-${sidebarOpen ? '96' : '64'} transition-margin duration-300 ease-in-out`}>
           <Navbar />

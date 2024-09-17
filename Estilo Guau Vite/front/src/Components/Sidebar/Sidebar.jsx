@@ -33,7 +33,7 @@ const componente = ({ isOpen, toggleSidebar }) => {
             <Sidebar.Item icon={HiReceiptTax } className='hover:bg-custom'>Ofertas</Sidebar.Item>
             </Link>
 
-            <Link to="/compras" >
+            <Link to="/cupones" >
             <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
             </Link>
 
