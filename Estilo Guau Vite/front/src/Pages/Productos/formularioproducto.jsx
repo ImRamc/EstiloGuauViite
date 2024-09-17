@@ -60,7 +60,6 @@ const FormularioProducto = () => {
   //const [rutaProducto, setRutaProducto] = useState('');
   const navigate = useNavigate();
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProducto({ ...producto, [name]: value });
@@ -78,8 +77,6 @@ const FormularioProducto = () => {
       setProducto({ ...producto, foto: Array.from(file) });
     }
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,12 +111,10 @@ const FormularioProducto = () => {
       if (response.status === 201) {
         setAgregado(true);
         
-        alert('Producto agregado con éxito');
-        navigate('/productos');
         // Redirigir a la página de productos después de 2 segundos
         setTimeout(() => {
           setAgregado(false); // Limpiar el mensaje de éxito después de la redirección
-
+          navigate('/productos');
         }, 2000);
       }
     } catch (error) {
@@ -136,9 +131,9 @@ const FormularioProducto = () => {
         <Navbar />
         <div className="carrito-container mx-5 my-8 flex-1 mt-10">
           <h2 className="pl-10 font-bold mb-4 ml-4 mt-20 text-center text-4xl">Nuevo producto</h2>
-          <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl pb-10">Por favor, ingrese los datos solicitados del producto, recuerde que todos lo campos son necesarios.</p>
+          <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl pb-5">Por favor, ingrese los datos solicitados del producto, recuerde que todos lo campos son necesarios.</p>
           {agregado && (
-            <div className="bg-green-100 border border-green-400 text-green-700 py-3 rounded relative mb-4" role="alert">
+            <div className="bg-green-100 border border-green-400 text-green-700 py-5 mx-32 rounded relative mb-4" role="alert">
               <strong className="font-bold">¡Producto agregado correctamente!</strong>
               {/*<p className="block sm:inline">Puedes ver el producto <a href={rutaProducto} className="text-blue-500 hover:underline">aquí</a>.</p>*/}
             </div>
@@ -147,7 +142,7 @@ const FormularioProducto = () => {
           <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto h-auto space-y-6">
             <div className="grid grid-cols-2 gap-6 text-left h-auto">
               {/*fecha_ingreso*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="fecha_ingreso" className="block text-gray-700 font-bold mb-2">
                   Fecha de Ingreso
                 </label>
@@ -163,7 +158,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*sku*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="sku" className="block text-gray-700 font-bold mb-2">
                   SKU
                 </label>
@@ -178,7 +173,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Nombre*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="producto" className="block text-gray-700 font-bold mb-2">
                   Nombre Producto
                 </label>
@@ -193,7 +188,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Marca*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="Marca" className="block text-gray-700 font-bold mb-2">
                   Marca
                 </label>
@@ -208,9 +203,9 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Talla*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
-                  ID Talla
+                  Talla
                 </label>
                 <select
                   type="number"
@@ -224,14 +219,14 @@ const FormularioProducto = () => {
                   <option value="" disabled>Selecciona la talla</option>
                   {tallas.map((talla) => (
                     <option key={talla.idTalla} value={talla.idTalla}>
-                      {talla.talla}
+                      {talla.idTalla}
                     </option>
                   ))}
 
                 </select>
               </div>
               {/*precio*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="precio" className="block text-gray-700 font-bold mb-2">
                   Precio
                 </label>
@@ -248,7 +243,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Descripcion*/}
-              <div className="col-span-2 mb-6">
+              <div className="col-span-2 mb-4">
                 <label htmlFor="descripcion" className="block text-gray-700 font-bold mb-2">
                   Descripción
                 </label>
@@ -262,7 +257,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Ofertas*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="idOferta" className="block text-gray-700 font-bold mb-2">
                   Oferta a aplicar
                 </label>
@@ -285,7 +280,7 @@ const FormularioProducto = () => {
                 </select>
               </div>
               {/*Existencias*/}
-              <div className="mb-6">
+              <div className="mb-4">
                 <label htmlFor="cantidad" className="block text-gray-700 font-bold mb-2">
                   Existencias del producto
                 </label>
@@ -300,7 +295,7 @@ const FormularioProducto = () => {
                 />
               </div>
               {/*Foto*/}
-              <div className="col-span-2 mb-6">
+              <div className="col-span-2 mb-4">
                 <label htmlFor="foto" className="block text-gray-700 font-bold mb-2">
                   Foto
                 </label>

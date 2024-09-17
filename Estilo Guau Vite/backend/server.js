@@ -54,6 +54,7 @@ app.get('/', (req, res) => {
   res.send('Hello from the backend!');
 });
 
+
 ///#Joel
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
@@ -89,6 +90,23 @@ app.post('/registro', (req, res) => {
   });
 });
 
+app.post('/new-user',upload.single('foto'), (req, res) => {
+  console.log('hola')
+
+  const { idRol, nombre, apellido, email, password,fecha_creacion } = req.body;
+  let foto='1721157608571-logo.png'
+  const encoded = Buffer.from(password).toString("base64");
+  const query = 'INSERT INTO usuario (idRol, nombre, apellido, email, password, fecha_creacion,foto) VALUES (?,?, ?, ?, ?, ?,?)';
+
+  console.log(req.body)
+  connection.query(query, [idRol, nombre, apellido, email, encoded,fecha_creacion, foto], (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({ message: "Usuario agregado" });
+    }
+  });
+});
 app.get('/usuariosget', (req, res) => {
   const query = 'SELECT * FROM usuario join rol';
   connection.query(query, (error, results) => {
@@ -178,17 +196,10 @@ WHERE
 app.put('/usuarioupdate/:idUsuario', upload.single('foto'), (req, res) => {
   const { idRol, nombre, apellido, email, password } = req.body;
   const foto = req.file ? req.file.filename : null; // Nombre del archivo de imagen guardado por Multer, si hay uno nuevo
-  const encodedPassword = password ? Buffer.from(password).toString("base64") : null;
 
   // Construcción de la consulta de actualización
   let updateQuery = 'UPDATE usuario SET idRol = ?, nombre = ?, apellido = ?, email = ?';
   let queryParams = [idRol, nombre, apellido, email];
-
-  // Agregar la contraseña a la consulta si se proporciona
-  if (encodedPassword) {
-    updateQuery += ', password = ?';
-    queryParams.push(encodedPassword);
-  }
 
   // Agregar la foto a la consulta si se proporciona
   if (foto) {
@@ -215,7 +226,7 @@ app.put('/usuarioupdate/:idUsuario', upload.single('foto'), (req, res) => {
         nombre,
         apellido,
         email,
-        password: encodedPassword,
+        password,
         foto
       });
     }

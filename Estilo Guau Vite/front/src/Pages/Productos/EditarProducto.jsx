@@ -10,15 +10,38 @@ const EditarProducto = () => {
 
 
   const { id } = useParams(); // Extraer el ID del producto desde la URL
- 
+  const [agregado, setAgregado] = useState(false);
   const [message, setMessage] = useState(''); // Estado para mensajes de éxito/error
   const [currentImage, setCurrentImage] = useState([]); // Estado para almacenar la URL de la imagen actual
-
+  const [ofertas, setofertas] = useState([]);
+  const [tallas, settallas] = useState([]);
   const navigate = useNavigate(); // Usar useNavigate en lugar de useHistory
 
   useEffect(() => {
     
-    
+  
+
+    const obtenerOfertas = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/all-ofertas');
+        setofertas(response.data);
+        //console.log(response.data)
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+      }
+    };
+    const obtenerTallas = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/tallas');
+        settallas(response.data);
+        //console.log(response.data)
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+      }
+    };
+    obtenerOfertas();
+    obtenerTallas();
+
     const obtenerProducto = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/productos/${id}`);
@@ -49,7 +72,7 @@ const EditarProducto = () => {
     descripcion: '',
     foto: [],
     idOferta:'',
-    fecha_ingreso : ''// 'YYYY-MM-DD'
+    fecha_ingreso : ''
     });
 
 /*   const obtenerProducto = async () => {
@@ -125,12 +148,17 @@ const EditarProducto = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
+      setAgregado(true);
       setMessage('Producto actualizado exitosamente.');
-      setTimeout(() => navigate('/productos'), 2000); // Navegar a la lista de productos después de 2 segundos
+      setTimeout(() => {
+        setAgregado(false);
+      navigate('/productos'); 
+    }, 2000); // Navegar a la lista de productos después de 2 segundos
     } catch (error) {
       console.error(`Error al actualizar el producto con ID ${id}:`, error);
       setMessage('Error al actualizar el producto.');
     }
+    
 
   };
 
@@ -139,185 +167,191 @@ const EditarProducto = () => {
        <Sidebar />
       <Navbar />
       <div className="carrito-container mx-4 my-8 flex-1 mt-10">
-        <h2 className="pl-10 text-lg font-bold mb-4 ml-4 mt-20 text-left">Editar Producto</h2>
-
-        {message && <div className={`alert ${message.includes('exitosamente') ? 'alert-success' : 'alert-error'}`}>{message}</div>}
-
-        <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
-
-         {/*fecha_ingreso*/}
-         <div className="mb-4">
-            <label htmlFor="fecha_ingreso" className="block text-gray-700 font-bold mb-2">
-              Fecha ingreso
-            </label>
-            <input
-              type="date"
-              id="fecha_ingreso"
-              name="fecha_ingreso"
-              value={new Date().toISOString().split('T')[0]}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el SKU del producto"
-              disabled
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="sku" className="block text-gray-700 font-bold mb-2">
-              SKU
-            </label>
-            <input
-              type="text"
-              id="sku"
-              name="sku"
-              value={producto.sku}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el SKU del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="producto" className="block text-gray-700 font-bold mb-2">
-              Nombre del producto
-            </label>
-            <input
-              type="text"
-              id="producto"
-              name="producto"
-              value={producto.producto}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el nombre del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="Marca" className="block text-gray-700 font-bold mb-2">
-              Marca
-            </label>
-            <input
-              type="text"
-              id="Marca"
-              name="Marca"
-              value={producto.Marca}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese la marca del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="precio" className="block text-gray-700 font-bold mb-2">
-              Precio
-            </label>
-            <input
-              type="number"
-              id="precio"
-              name="precio"
-              value={producto.precio}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el precio del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
-              ID Talla
-            </label>
-            <input
-              type="text"
-              id="idTalla"
-              name="idTalla"
-              value={producto.idTalla}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el ID de talla del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
-             Oferta
-            </label>
-            <input
-              type="text"
-              id="idOferta"
-              name="idOferta"
-              value={producto.idOferta}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el ID de talla del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
-             Existencias del producto
-            </label>
-            <input
-              type="text"
-              id="cantidad"
-              name="cantidad"
-              value={producto.cantidad}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese el ID de talla del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="descripcion" className="block text-gray-700 font-bold mb-2">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={producto.descripcion}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Ingrese la descripción del producto"
-            />
-          </div>
-
-          <div className="mb-4">
-          {currentImage.length > 0 ? (
-    currentImage.map((image, index) => (
-              <div className="mb-4">
-                 <img
-        key={index}
-        src={`http://localhost:3001/images/${image}`} // Asegúrate de ajustar la ruta correcta
-        alt={`Imagen ${index + 1}`}
-        className="gallery-image"
+        <h2 className="pl-10 font-bold mb-5 ml-4 mt-16 text-center text-4xl">Editar producto</h2>
+      <p className="pl-10 font-light mb-8 ml-4 text-center text-1xl">Por favor, ingrese los datos que desea modificar.</p>
+      {agregado && (
+            <div className="bg-green-100 border border-green-400 text-green-700 py-5 mx-96 rounded relative mb-4" role="alert">
+              <strong className="font-bold">¡Producto editado correctamente!</strong>
+              {/*<p className="block sm:inline">Puedes ver el producto <a href={rutaProducto} className="text-blue-500 hover:underline">aquí</a>.</p>*/}
+            </div>
+          )}
+        <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto grid grid-cols-2 gap-6">
+          
+  {/* Columna 1 */}
+  <div>
+    {/* Fecha de ingreso */}
+    <div className="mb-4">
+      <label htmlFor="fecha_ingreso" className="block text-gray-700 font-bold mb-2">Fecha ingreso</label>
+      <input
+        type="date"
+        id="fecha_ingreso"
+        name="fecha_ingreso"
+        value={new Date().toISOString().split('T')[0]}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        disabled
       />
-              </div>
-              )))
-              : (
-                <p>No hay imágenes disponibles</p>
-              )}
-            <label htmlFor="foto" className="block text-gray-700 font-bold mb-2">
-              Foto
-            </label>
-            <input
-              type="file"
-              id="foto"
-              name="foto"
-              onChange={handleFileChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              multiple
-            />
-          </div>
+    </div>
 
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Actualizar
-            </button>
-          </div>
-        </form>
+    {/* SKU */}
+    <div className="mb-4">
+      <label htmlFor="sku" className="block text-gray-700 font-bold mb-2">SKU</label>
+      <input
+        type="text"
+        id="sku"
+        name="sku"
+        value={producto.sku}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Ingrese el SKU del producto"
+      />
+    </div>
+
+    {/* Nombre del producto */}
+    <div className="mb-4">
+      <label htmlFor="producto" className="block text-gray-700 font-bold mb-2">Nombre del producto</label>
+      <input
+        type="text"
+        id="producto"
+        name="producto"
+        value={producto.producto}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Ingrese el nombre del producto"
+      />
+    </div>
+
+    {/* Marca */}
+    <div className="mb-4">
+      <label htmlFor="Marca" className="block text-gray-700 font-bold mb-2">Marca</label>
+      <input
+        type="text"
+        id="Marca"
+        name="Marca"
+        value={producto.Marca}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Ingrese la marca del producto"
+      />
+    </div>
+  </div>
+
+  {/* Columna 2 */}
+  <div>
+    {/* Precio */}
+    <div className="mb-4">
+      <label htmlFor="precio" className="block text-gray-700 font-bold mb-2">Precio</label>
+      <input
+        type="number"
+        id="precio"
+        name="precio"
+        value={producto.precio}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Ingrese el precio del producto"
+      />
+    </div>
+
+                  {/*Talla*/}
+                  <div className="mb-4">
+                <label htmlFor="idTalla" className="block text-gray-700 font-bold mb-2">
+                  Talla
+                </label>
+                <select
+                  type="number"
+                  id="idTalla"
+                  name="idTalla"
+                  value={producto.idTalla}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+
+                  <option value="" disabled>Selecciona la talla</option>
+                  {tallas.map((talla) => (
+                    <option key={talla.idTalla} value={talla.idTalla}>
+                      {talla.talla}
+                    </option>
+                  ))}
+
+                </select>
+              </div>
+
+              {/*Ofertas*/}
+              <div className="mb-4">
+                <label htmlFor="idOferta" className="block text-gray-700 font-bold mb-2">
+                  Oferta a aplicar
+                </label>
+
+                <select
+                 type="number"
+                  id="idOferta"
+                  name="idOferta"
+                  value={producto.idOferta}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="" disabled>Selecciona una oferta</option>
+                  {ofertas.map((oferta) => (
+                    <option key={oferta.idOferta} value={oferta.idOferta}>
+                      {oferta.descripcion}
+                    </option>
+                  ))}
+
+                </select>
+              </div>
+
+    {/* Cantidad */}
+    <div className="mb-4">
+      <label htmlFor="cantidad" className="block text-gray-700 font-bold mb-2">Existencias del producto</label>
+      <input
+        type="text"
+        id="cantidad"
+        name="cantidad"
+        value={producto.cantidad}
+        onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Ingrese las existencias del producto"
+      />
+    </div>
+  </div>
+
+  {/* Descripción */}
+  <div className="col-span-2 mb-4">
+    <label htmlFor="descripcion" className="block text-gray-700 font-bold mb-2">Descripción</label>
+    <textarea
+      id="descripcion"
+      name="descripcion"
+      value={producto.descripcion}
+      onChange={handleChange}
+      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      placeholder="Ingrese la descripción del producto"
+    />
+  </div>
+
+  {/* Foto */}
+  <div className="col-span-2 mb-4">
+    <label htmlFor="foto" className="block text-gray-700 font-bold mb-2">Foto</label>
+    <input
+      type="file"
+      id="foto"
+      name="foto"
+      onChange={handleFileChange}
+      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      multiple
+    />
+  </div>
+
+  {/* Botón para actualizar */}
+  <div className="col-span-2 flex items-center justify-between">
+    <button
+      type="submit"
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+    >
+      Actualizar
+    </button>
+  </div>
+</form>
+
       </div>
       <Footer />
     </div>
