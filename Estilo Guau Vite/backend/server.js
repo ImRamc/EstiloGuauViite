@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '12345',
+  password: '',
   database: 'bdestiloguau'
 });
 
@@ -851,6 +851,146 @@ app.post('/nueva-compra', (req, res) => {
   });
 });
 
+//Cupones - Pedro
+// Obtener todos los cupones
+app.get('/cupones', (req, res) => {
+  const query = 'SELECT * FROM cupones';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      // Convertir status numérico a texto
+      const mappedResults = results.map(cupon => ({
+        ...cupon,
+        status: cupon.status === 1 ? 'activo' : 'inactivo'
+      }));
+      res.json(mappedResults);
+    }
+  });
+});
+
+// Obtener un cupón por ID
+app.get('/cupones/:id', (req, res) => {
+  const query = 'SELECT * FROM cupones WHERE idCupon = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Cupón no encontrado' });
+    } else {
+      const cupon = results[0];
+      res.json({
+        ...cupon,
+        status: cupon.status === 1 ? 'activo' : 'inactivo'
+      });
+    }
+  });
+});
+
+// Agregar un nuevo cupón
+app.post('/cupones-nuevo', (req, res) => {
+  const { cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
+
+  // Asegurarse de que status es un número entero
+  const statusValue = parseInt(status, 10);
+
+  if (isNaN(statusValue)) {
+    return res.status(400).json({ message: 'Estado inválido' });
+  }
+
+  const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
+  const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
+
+  const query = `
+    INSERT INTO cupones (cupon, descripcion, fechaRegistro, vigencia, status)
+    VALUES (?, ?, ?, ?, ?)`;
+
+  connection.query(query, [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue], (error, results) => {
+    if (error) {
+      console.error('Error en la consulta de inserción:', error);
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({
+        idCupon: results.insertId,
+        cupon,
+        descripcion,
+        fechaRegistro: formattedFechaRegistro,
+        vigencia: formattedVigencia,
+        status: statusValue
+      });
+    }
+  });
+});
+
+
+// Actualizar un cupón
+app.put('/cupones/:id', (req, res) => {
+  const { cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
+
+  // Convertir `status` a número
+  const statusValue = parseInt(status, 10);
+
+  console.log('Datos recibidos en el backend:', {
+    cupon,
+    descripcion,
+    fechaRegistro,
+    vigencia,
+    status: statusValue
+  });
+
+  // Verificar si `statusValue` es un número válido
+  if (isNaN(statusValue) || (statusValue !== 0 && statusValue !== 1)) {
+    return res.status(400).json({ message: 'Estado inválido' });
+  }
+
+  const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
+  const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
+
+  const query = `
+  UPDATE cupones
+  SET cupon = ?, descripcion = ?, fechaRegistro = ?, vigencia = ?, status = ?
+  WHERE idCupon = ?`;
+
+
+  connection.query(query, [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id], (error, results) => {
+    console.log('Datos enviados a la consulta:', [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id]);
+    console.log('Resultados de la consulta:', results);
+    
+    if (error) {
+      console.error('Error en la consulta de actualización:', error);
+      res.status(400).json({ message: error.message });
+    } else {
+      if (results.affectedRows === 0) {
+        res.status(404).json({ message: 'Cupón no encontrado' });
+      } else {
+        res.json({
+          idCupon: req.params.id,
+          cupon,
+          descripcion,
+          fechaRegistro: formattedFechaRegistro,
+          vigencia: formattedVigencia,
+          status: statusValue
+        });
+      }
+    }
+  });  
+});
+
+
+// Eliminar un cupón
+app.delete('/cupones/:id', (req, res) => {
+  const query = 'DELETE FROM cupones WHERE idCupon = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Cupón no encontrado' });
+    } else {
+      res.json({ message: 'Cupón eliminado' });
+    }
+  });
+});
+//END Cupones - Pedro
 
 app.listen(3001, () => {
   console.log(`Server is running on port: ${port}`);

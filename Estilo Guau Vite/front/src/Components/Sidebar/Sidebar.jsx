@@ -25,6 +25,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <FaBox className="pl-4 w-10" />
             {isOpen && <Link to="/productos" className="font-roboto text-medium block w-full">Productos</Link>}
           </li>
+
+          <li className="flex items-center p-2 rounded-lg hover:bg-custom">
+            <FaBox className="pl-4 w-10" />
+            {isOpen && <Link to="/cupones" className="font-roboto text-medium block w-full">Cupones</Link>}
+          </li>
         </ul>
         {/* Aquí puedes agregar más elementos del sidebar según tu aplicación */}
       </div>

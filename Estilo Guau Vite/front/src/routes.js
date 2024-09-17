@@ -13,6 +13,9 @@ import Dashboard from './Pages/Dashboard/Dashboard';
 import DetalleProducto from './Pages/DetalleProducto/DetalleProducto';
 import PerfilUsuario from './Pages/PerfilUsuario/PerfilUsuario';
 import FormUs from './Pages/PerfilUsuario/FormUsuario';
+import Cupones from './Pages/Cupones/Cupones';
+import EditarCupon from './Pages/Cupones/EditarCupon';
+import FormularioCupon from './Pages/Cupones/FormularioCupon';
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -104,6 +107,38 @@ const RoutesComponent = () => {
           element={
             idRol && (idRol === 1 || idRol === 2) ? (
               <FormUs />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/Cupones"
+          element={
+            idRol && idRol === 2 ? (
+              <Cupones />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/Cupones/formulario"
+          element={
+            idRol && idRol === 2 ? (
+              <FormularioCupon />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Cupones/editar/:id"
+          element={
+            idRol && idRol === 2 ? (
+              <EditarCupon />
             ) : (
               <Navigate to="/Login" />
             )
