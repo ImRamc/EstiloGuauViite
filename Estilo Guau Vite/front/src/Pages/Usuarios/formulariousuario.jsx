@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Navbar from "../../Components/Navbar/Navbar";
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
@@ -88,14 +88,15 @@ const FormularioUsuario = () => {
 
 
   return (
-    <div className="carrito-page flex flex-col h-auto pl-44">
+    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+       <NavbarAdmin />
       <Sidebar />
       
-        <Navbar />
-        <div className="carrito-container mx-5 my-8 flex-1 mt-10">
-          <h2 className="pl-10 font-bold mb-4 ml-4 mt-20 text-center text-4xl">Nuevo usuario</h2>
+        <div className="carrito-container mx-5 my-8 flex-1 ">
+          <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Nuevo usuario</h2>
           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl pb-10">Por favor, ingrese los datos solicitados del usuario, recuerde que todos lo campos son necesarios
-            <span className="text-red-700">*</span></p>
+            <span className="text-red-700 text-3xl">*</span></p>
+            
           {agregado && (
             <div className="bg-green-100 border border-green-400 text-green-700 py-5 mx-32 rounded relative mb-4" role="alert">
               <strong className="font-bold">¡Usuario agregado correctamente!</strong>
@@ -212,6 +213,14 @@ const FormularioUsuario = () => {
               >
                 Agregar
               </button>
+              <div className="text-right items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Volver
+            </button>           
+          </div>
             </div>
           </form>
 

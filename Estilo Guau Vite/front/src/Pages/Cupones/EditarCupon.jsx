@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from "../../Components/Navbar/Navbar";
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 const EditarCupon = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [cupon, setCupon] = useState({
       cupon: '',
       descripcion: '',
@@ -17,11 +16,7 @@ const EditarCupon = () => {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
-  
-    const toggleSidebar = () => {
-      setSidebarOpen(!sidebarOpen);
-    };
-  
+    
     useEffect(() => {
       const obtenerCupon = async () => {
         try {
@@ -63,22 +58,20 @@ const EditarCupon = () => {
 
   return (
     <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className={`flex-1 ml-${sidebarOpen ? '96' : '64'} transition-margin duration-300 ease-in-out`}>
-        <Navbar />
-        <div className="carrito-container mx-4 my-8 flex-1 mt-10">
-          <div className="text-right items-center mb-4 mt-20">
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Volver
-            </button>
-            <h2 className="pl-10 text-lg font-bold mb-4 ml-4 mt-4 text-left">Editar Cupón</h2>
-          </div>
+       <NavbarAdmin />
+      <Sidebar/>
+        <div className="carrito-container mx-4 my flex-1">
+        <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Nuevo cupón</h2>
+          <p className="pl-10 font-light  ml-4 text-center text-1xl pb-10">Por favor, ingrese los datos solicitados del cupón, recuerde que todos lo campos son necesarios
+            <span className="text-red-700 text-3xl">*</span></p>
+        <div className="carrito-container mx-4 flex-1">
 
-          {message && <div className={`alert ${message.includes('exitosamente') ? 'alert-success' : 'alert-error'}`}>{message}</div>}
-
+        {message && (
+  <div className={`py-5 px-6 mb-4 rounded relative ${message.includes('exitosamente') ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`} role="alert">
+    <strong className="font-bold">{message.includes('exitosamente') ? '¡Éxito! ' : 'Error!'}</strong>
+    <p className="block sm:inline">{message}</p>
+  </div>
+)}
           <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
             <div className="mb-4">
               <label htmlFor="cupon" className="block text-gray-700 font-bold mb-2">
@@ -156,18 +149,26 @@ const EditarCupon = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Actualizar
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="bg-custom hover:bg-second text-black font-bold py-2 mt-5 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Actualizar
+            </button>
+            <div className="text-right items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Volver
+            </button>           
+          </div>
+          </div>
           </form>
         </div>
         <Footer />
       </div>
-    </div>
+      </div>
   );
 };
 

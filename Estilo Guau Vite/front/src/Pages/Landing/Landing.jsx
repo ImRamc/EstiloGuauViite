@@ -1,15 +1,15 @@
 import React from 'react';
 import Navbar from "../../Components/Navbar/NavbarLanding";
-import Footer from "../../Components/Footer/Footer";
 import { Carrusel } from "../../Components/Carrusel/Carrusel";
 import Perritos from "../../img/Perritos.jpeg"
 import PerritoCapucha from "../../img/PerritoCapucha.jpg"
+import FooterLanding from '../../Components/Footer/FooterLanding';
 
 function Landing() {
   return (
     <div className="landing-page">
       <Navbar />
-      <div className="main-image-section mt-24 py-12 bg-black bg-opacity-100">
+      <div className="main-image-section bg-black bg-opacity-100">
         <div className="main-image flex justify-center">
           <div className="bg-black h-imagen-2xl">
           <img className="object-cover h-full w-full"
@@ -40,7 +40,7 @@ function Landing() {
   </div>
 </div>
 
-      <Footer />
+      <FooterLanding/>
     </div>
   );
 }

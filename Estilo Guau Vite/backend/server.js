@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '12345',
   database: 'bdestiloguau'
 });
 
@@ -528,6 +528,8 @@ app.get('/all-ofertas', (req, res) => {
   });
 });
 
+
+
 //Pedro PRODUCTOS
 // Obtener todos los productos
 app.get('/productos', (req, res) => {
@@ -540,6 +542,22 @@ app.get('/productos', (req, res) => {
     }
   });
 });
+
+// Obtener todos los productos por idUs
+app.get('/productosidus/:idUsuario', (req, res) => {
+
+  const query = 'SELECT * FROM producto where idUsuario = ?';
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 
 // Obtener un producto por ID
 app.get('/productos/:id', (req, res) => {
@@ -848,6 +866,29 @@ app.get('/ganancias/mensuales', (req, res) => {
   });
 });
 
+app.get('/ganancias/mensuales/:idUsuario', (req, res) => {
+  // Obtener la fecha actual y la fecha hace 6 meses
+  const fechaActual = moment(); // Fecha actual
+  const fechaInicio = moment().subtract(6, 'months'); // Fecha hace 6 meses
+
+  const query = `
+    SELECT YEAR(fecha_compra) AS anio, MONTH(fecha_compra) AS mes, SUM(precio * cantidad_producto) AS total_ganancias
+    FROM compra
+    JOIN producto ON compra.idProducto = producto.idProducto
+    WHERE fecha_compra BETWEEN ? AND ?
+    GROUP BY YEAR(fecha_compra), MONTH(fecha_compra)
+    ORDER BY anio, mes;
+  `;
+
+  connection.query(query, [fechaInicio.format('YYYY-MM-DD'), fechaActual.format('YYYY-MM-DD')], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 app.get('/mas-vendidos', (req, res) => {
   const fechaActual = new Date();
   const anioActual = fechaActual.getFullYear();
@@ -873,7 +914,7 @@ LIMIT 5;
       console.error('Error en la consulta:', error);
       res.status(500).json({ message: 'Error en la consulta' });
     } else {
-      console.log('Resultados de consulta:', results);
+      //console.log('Resultados de consulta:', results);
 
       if (results.length === 0) {
         res.status(404).json({ message: 'Productos no encontrados' });

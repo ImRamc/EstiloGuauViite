@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/Navbar/Navbar";
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import Footer from "../../Components/Footer/Footer";
 
@@ -45,11 +45,17 @@ const Compras = () => {
     }, []);
 
     return (
-        <div className="p-10 pl-72 pr-28 min-h-screen flex flex-col md:max-xl:flex">
-              <Navbar />
-            <Sidebar/>
+        <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+        <NavbarAdmin />
+       <Sidebar/>
+      
+   
+         <div className="carrito-container mx-4 flex-1 ">
+         <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Ventas realizadas</h2>
+           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas las ventas realizadas por los usuarios</p>
+ 
             
-            <div className="flex flex-row justify-center py-20 ">
+            <div className="flex flex-row justify-center ">
             
                 <div className="overflow-x-auto ">
                     <table className="w-full border-collapse border border-gray-400 ">
@@ -104,6 +110,7 @@ const Compras = () => {
                     </table>
                 </div>
             </div>
+        </div>
         </div>
     );
 };

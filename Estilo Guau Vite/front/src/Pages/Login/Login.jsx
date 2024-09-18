@@ -28,7 +28,7 @@ const Login = () => {
           {/*alert(response.data.message);*/}
           //navigate('/')
           console.log('Usuario autenticado:', user);
-          setIdUsuarioYRol(user.idUsuario, user.idRol);
+          setIdUsuarioYRol(user.idUsuario, user.idRol, user.nombre, user.email);
           if (user.idRol === 1) {
             navigate('/');
           } else if (user.idRol === 2) {

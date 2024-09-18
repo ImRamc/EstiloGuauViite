@@ -13,7 +13,7 @@ function classNames(...classes) {
 
 const NavbarAdmin = () => {
   const { userData, logout } = useContext(UserContext);
-  const { idUsuario , idRol} = userData;
+  const { idUsuario } = userData;
 
 
   const handleLogout = () => {
@@ -23,7 +23,8 @@ const NavbarAdmin = () => {
   return (
     <section>
       <Navbar fluid rounded>
-      <div className="bg-black fixed w-full z-20 top-0 start-0 border-b p-4 flex justify-between items-center border-gray-700 shadow-md">          <Navbar.Brand className="">
+        <div className="bg-white fixed w-full z-20 top-0 start-0 border-b p-4 flex justify-between items-center border-gray-200 dark:border-gray-600 shadow-md">
+          <Navbar.Brand className="">
             <div className="flex items-center">
               {/* Logo */}
               <Link to="/">
@@ -31,30 +32,22 @@ const NavbarAdmin = () => {
               </Link>
               {/* search button */}
               <Link to="/">
-                <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring- px-2">
+                <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white px-2">
                   <span className="sr-only">Open user menu</span>
                   <MagnifyingGlassIcon className="h-9 w-9 text-red-500" aria-hidden="true" strokeWidth={3} />
                 </button>
               </Link>
             </div>
           </Navbar.Brand>
-
-                  {/* Encabezado en el centro */}
-                  <div className="text-center flex-grow">
-            <div className="text-white text-5xl font-semibold tracking-widest font-roboto">
-              ESTILO GUAU
-            </div>
-          </div>
-
           {/* Elementos a la derecha */}
           <div className="flex items-center space-x-4">
-            {/* Cart button */}
-            <Link to="/">
+            {/* Cart button 
+            <Link to="/Tienda">
               <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
                 <span className="sr-only">Open user menu</span>
                 <ShoppingCartIcon className="h-9 w-9 text-red-500" aria-hidden="true" />
               </button>
-            </Link>
+            </Link>*/}
             {/*Tienda*/}
             <Link to="/Tienda">
               <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
@@ -94,16 +87,8 @@ const NavbarAdmin = () => {
                   )}
                 </Dropdown.Item>
 
-                     {/**Panel de administracion */}
-                   {idRol === 2 && (
-                    <Dropdown.Item className="hover:bg-custom">
-                       <Link
-                      to="/dashboard"
-                    >
-                      Dashboard
-                    </Link>
-                    </Dropdown.Item>
-                  )}
+                  {/**Panel de administracion */}
+                <Dropdown.Item className="hover:bg-custom">Dashboard</Dropdown.Item>
 
                 {/**Servicios */}
                 <Dropdown.Item className="hover:bg-custom">Servicios</Dropdown.Item>
@@ -122,7 +107,6 @@ const NavbarAdmin = () => {
                   ) : null}
                 </Dropdown.Item>
               </Dropdown>
-              
               <Navbar.Toggle />
             </div>
           </div>

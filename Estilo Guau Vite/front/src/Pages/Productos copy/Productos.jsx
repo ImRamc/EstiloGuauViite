@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import Navbar from "../../Components/Navbar/Navbar";
+import Footer from "../../Components/Footer/FooterLanding";
 import Sidebar from '../../Components/Sidebar/Sidebar';
-import { UserContext } from '../../Context/UserContext';
-
 
 const Productos = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Cambia el estado inicial según tus necesidades
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const [productos, setProductos] = useState([]);
-  const { userData } = useContext(UserContext);
 
   useEffect(() => {
     obtenerProductos();
@@ -18,7 +20,7 @@ const Productos = () => {
 
   const obtenerProductos = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/productosidus/${userData.idUsuario}`);
+      const response = await axios.get('http://localhost:3001/productos');
       setProductos(response.data);
       //console.log(productos)
     } catch (error) {
@@ -36,16 +38,18 @@ const Productos = () => {
   };
 
   return (
-<div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-   <NavbarAdmin />
+    <div className="">
+      
+      <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
       <Sidebar/>
       
-      <div className="carrito-container mx-4 flex-1 ">
-      <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Productos en venta</h2>
-           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas los productos</p>
+      <Navbar />
+      <div className="carrito-container mx-4 my-8 flex-1 mt-10">
+        <h2 className="text-lg font-bold mb-4 ml-4 mt-20 text-left"></h2>
+
         <div className="flex justify-start pb-10">
         <Link to="/productos/formulario">
-            <button className="bg-custom border  hover:bg-second text-black font-medium py-2 px-4 rounded">
+            <button className="bg-custom border  hover:bg-second text-black font-medium py-2 px-4 my-4 rounded">
             Agregar Producto
             </button>
         </Link>
@@ -118,6 +122,7 @@ const Productos = () => {
         </div>
       </div>
       
+    </div>
        <Footer />
     </div>
   );

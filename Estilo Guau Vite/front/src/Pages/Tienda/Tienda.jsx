@@ -2,6 +2,7 @@ import React, { useState, useEffect  } from 'react';
 import Navbar from "../../Components/Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../../Components/Footer/Footer';
 
 
 import PerroTienda1 from "../../img/PerroTienda1.jpeg";
@@ -88,7 +89,8 @@ function Tienda() {
   };
 
   return (
-    <div className="pt-10 Store flex flex-col items-center min-h-screen px-8">
+   <section>
+     <div className="w-full pt-10 Store flex flex-col items-center min-h-screen px-8">
       <Navbar />
       <header className="w-full mt-12">
         <div className="flex justify-between items-center p-4">
@@ -152,11 +154,18 @@ function Tienda() {
             </div>
           ))}
         </div>
+        
       </div>
+      
       <div className="text-center mt-8">
         {/* Otros contenidos */}
       </div>
+      
     </div>
+    <Footer/>
+   </section>
+     
+
   );
 }
 

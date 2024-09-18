@@ -181,7 +181,7 @@ const Graficas = () => {
   //#endregion
 
   return (
-    <div className="container mx-auto pt-28 px-32 p-4 grid grid-cols-3 gap-4">
+    <div className="container mx-auto px-32 p-4 grid grid-cols-3 gap-4">
     <h1 className="text-start text-4xl font-bold">Resumen de ganancias</h1>
       <div className="col-span-3 grid grid-cols-3 gap-4">
         <div className="p-4 bg-custom rounded-lg shadow-xl text-center">

@@ -7,12 +7,13 @@ const componente = ({ isOpen, toggleSidebar }) => {
   return (
     
     <Sidebar aria-label="Sidebar with multi-level dropdown example">
-     
-      <div className="pt-32 h-screen fixed top-0 left-1 bg-white text-black shadow-2xl w-56 ">
+
+      <div className="h-screen fixed mt-24 top-0 left-1 bg-white text-black shadow-2xl w-64 p-8 ">
+      <h1 className="text-2xl font-bold font-roboto">Panel de admistración</h1>
         <Sidebar.Items >
         <Sidebar.ItemGroup >
           <Link to="/dashboard">
-          <Sidebar.Item href="#" icon={HiChartPie} className='hover:bg-custom'>
+          <Sidebar.Item href="#" icon={HiChartPie} className='hover:bg-custom mt-6'>
             Dashboard
           </Sidebar.Item>
           </Link>

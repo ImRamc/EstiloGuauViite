@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from "../../Components/Navbar/Navbar";
-import Footer from "../../Components/Footer/Footer";
+import { UserContext } from '../../Context/UserContext';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
+import Footer from "../../Components/Footer/FooterLanding";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 
@@ -115,11 +116,12 @@ const EditarUsuario = () => {
 
 
   return (
-    <div className="carrito-page flex flex-col min-h-screen">
+    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+      <NavbarAdmin/>
        <Sidebar/>
-      <Navbar />
-      <div className="carrito-container mx-4 my-8 flex-1 mt-10">
-        <h2 className="pl-10 font-bold mb-4 ml-4 mt-16 text-center text-4xl">Editar usuario</h2>
+      
+      <div className="carrito-container mx-4 flex-1 ">
+        <h2 className="pl-10 font-bold mb-4 ml-4  text-center text-4xl">Editar usuario</h2>
       <p className="pl-10 font-light mb-8 ml-4 text-center text-1xl">Por favor, ingrese los datos que desea modificar.</p>
       {agregado && (
             <div className="bg-green-100 border border-green-400 text-green-700 py-5 mx-96 rounded relative mb-4" role="alert">
@@ -206,6 +208,14 @@ const EditarUsuario = () => {
             >
               Actualizar
             </button>
+            <div className="text-right items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Volver
+            </button>           
+          </div>
           </div>
         </form>
       </div>

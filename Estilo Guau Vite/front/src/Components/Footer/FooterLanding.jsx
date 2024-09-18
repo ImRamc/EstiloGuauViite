@@ -11,11 +11,11 @@ import {
 } from "flowbite-react";
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
-const Footers = () => {
+const FooterLanding = () => {
   return (
     <section>
-      <Footer container>
-      <div className="w-full">
+      <Footer container className="bg-black">
+      <div className="w-full ">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <div>
             <FooterBrand
@@ -67,4 +67,4 @@ const Footers = () => {
   );
 };
 
-export default Footers;
+export default FooterLanding;

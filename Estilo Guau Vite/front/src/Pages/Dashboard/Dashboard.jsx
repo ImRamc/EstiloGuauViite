@@ -1,6 +1,6 @@
 import React , { useContext, useState }from "react";
 import { UserContext } from '../../Context/UserContext';
-import Navbar from '../../Components/Navbar/Navbar';
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import Graficas from '../../Components/Graficas/Graficas';
 
@@ -11,8 +11,8 @@ const Dashboard = () => {
 
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
-       <Navbar />
+    <div className="pl-72 pt-12 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+       <NavbarAdmin />
       <Sidebar />       
         <div>
           <Graficas/>

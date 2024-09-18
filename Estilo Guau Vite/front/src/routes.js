@@ -16,6 +16,9 @@ import FormUs from './Pages/PerfilUsuario/FormUsuario';
 import Cupones from './Pages/Cupones/Cupones';
 import EditarCupon from './Pages/Cupones/EditarCupon';
 import FormularioCupon from './Pages/Cupones/FormularioCupon';
+import Usuarios from './Pages/Usuarios/Usuarios';
+import FormularioUsuario from './Pages/Usuarios/formulariousuario';
+import EditarUsuario from './Pages/Usuarios/EditarUsuario';
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -113,6 +116,37 @@ const RoutesComponent = () => {
           }
         />
         
+        <Route
+          path="/usuarios"
+          element={
+            idRol && idRol === 2 ? (
+              <Usuarios />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/usuarios/formulario"
+          element={
+            idRol && idRol === 2 ? (
+              <FormularioUsuario />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/usuarios/editar/:id"
+          element={
+            idRol && idRol === 2 ? (
+              <EditarUsuario />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
         <Route
           path="/Cupones"
           element={

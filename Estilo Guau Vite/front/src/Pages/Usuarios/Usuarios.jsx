@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import Navbar from "../../Components/Navbar/Navbar";
+import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
@@ -34,18 +34,17 @@ const Usuarios = () => {
   };
 
   return (
-    <div className="">
-      
-      <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+       <NavbarAdmin />
       <Sidebar/>
       
-      <Navbar />
-      <div className="carrito-container mx-4 my-8 flex-1 mt-10">
-        <h2 className="text-lg font-bold mb-4 ml-4 mt-20 text-left"></h2>
-
+   
+      <div className="carrito-container mx-4  flex-1 ">
+      <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Usuarios </h2>
+           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas los usuarios registrados</p>
         <div className="flex justify-start pb-10">
         <Link to="/usuarios/formulario">
-            <button className="bg-custom border  hover:bg-second text-black font-medium py-2 px-4 my-4 rounded">
+            <button className="bg-custom border  hover:bg-second text-black font-medium py-2 px-4 rounded">
             Agregar Usuario
             </button>
         </Link>
@@ -114,7 +113,7 @@ const Usuarios = () => {
         </div>
       </div>
       
-    </div>
+
        <Footer />
     </div>
   );
