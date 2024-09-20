@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'elias',
+  password: '',
   database: 'bdestiloguau'
 });
 
@@ -161,42 +161,6 @@ JOIN
     tallas t ON p.idTalla = t.idTalla  -- Hacemos el JOIN con la tabla de tallas
 WHERE
     c.idUsuario = ?;
-  `;
-
-  // Ejecutar la consulta con el idUsuario proporcionado
-  connection.query(query, [req.params.idUsuario], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else if (results.length === 0) {
-      res.status(404).json({ message: 'Compras no encontradas para este usuario' });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-app.get('/comprasxus/:idUsuario', (req, res) => {
-  const query = `
-SELECT 
-    producto.producto AS nombre_producto, 
-    producto.descripcion, 
-    producto.precio,
-    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
-    tallas.talla,
-    compra.cantidad_producto,
-    compra.idUsuario,
-    compra.idCompra,
-    usuario.nombre as cliente
-FROM 
-    compra 
-JOIN 
-    producto ON compra.idProducto = producto.idProducto
-JOIN
-    tallas  ON producto.idTalla = tallas.idTalla
-JOIN
-    usuario ON compra.idUsuario = usuario.idUsuario
-WHERE 
-    producto.idUsuario = ?
   `;
 
   // Ejecutar la consulta con el idUsuario proporcionado
@@ -579,7 +543,7 @@ app.get('/productos', (req, res) => {
   });
 });
 
-// Obtener todos los productos por idUsuario
+// Obtener todos los productos por idUs
 app.get('/productosidus/:idUsuario', (req, res) => {
 
   const query = 'SELECT * FROM producto where idUsuario = ?';
@@ -837,42 +801,6 @@ app.get('/ventas/mensuales', (req, res) => {
   });
 });
 
-//Ventas mensuales por IDUsuario
-app.get('/ventas/mensuales/:idUsuario', (req, res) => {
-  // Obtener el año y mes actual
-  const fechaActual = new Date();
-  const anioActual = fechaActual.getFullYear();
-  const mesActual = fechaActual.getMonth() + 1; // Los meses en JavaScript son base 0 (enero = 0), por lo que sumamos 1
-
-  // Consulta SQL corregida
-  const query = `
-SELECT 
-  YEAR(fecha_compra) AS anio, 
-  MONTH(fecha_compra) AS mes, 
-  SUM(precio * cantidad_producto) AS total_ventas
-FROM 
-  compra
-JOIN 
-  producto ON compra.idProducto = producto.idProducto
-WHERE 
-  YEAR(fecha_compra) = ? 
-  AND MONTH(fecha_compra) = ? 
-  AND producto.idUsuario = ?
-GROUP BY 
-  YEAR(fecha_compra), 
-  MONTH(fecha_compra);
-  `;
-
-  // Ejecutar la consulta con los parámetros correctos
-  connection.query(query, [anioActual, mesActual, req.params.idUsuario], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
 // Ventas de la semana
 app.get('/ventas/semana', (req, res) => {
   const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
@@ -886,33 +814,6 @@ app.get('/ventas/semana', (req, res) => {
   `;
 
   connection.query(query, [inicioSemana, finSemana], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-// Ventas de la semana x IDUSUARIO
-app.get('/ventas/semana/:idUsuario', (req, res) => {
-  const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
-  const finSemana = moment().endOf('week').format('YYYY-MM-DD');
-
-  const query = `
-SELECT 
-  SUM(precio * cantidad_producto) AS total_ventas_semana
-FROM 
-  compra
-JOIN 
-  producto ON compra.idProducto = producto.idProducto
-WHERE 
-  fecha_compra BETWEEN ? AND ?
-  AND producto.idUsuario = ?
-
-  `;
-
-  connection.query(query, [inicioSemana, finSemana, req.params.idUsuario], (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
     } else {
@@ -941,31 +842,6 @@ app.get('/ventas/dia', (req, res) => {
   });
 });
 
-// Ventas del día x idUsuario
-app.get('/ventas/dia/:idUsuario', (req, res) => {
-  const fechaHoy = moment().format('YYYY-MM-DD');
-
-  const query = `
-SELECT 
-  SUM(precio * cantidad_producto) AS total_ventas_dia
-FROM 
-  compra
-JOIN 
-  producto ON compra.idProducto = producto.idProducto
-WHERE 
-  fecha_compra = ?
-  AND producto.idUsuario = ?
-  `;
-
-  connection.query(query, [fechaHoy, req.params.idUsuario ], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
 // Ganancias mensuales Grafica
 app.get('/ganancias/mensuales', (req, res) => {
   // Obtener la fecha actual y la fecha hace 6 meses
@@ -973,8 +849,7 @@ app.get('/ganancias/mensuales', (req, res) => {
   const fechaInicio = moment().subtract(6, 'months'); // Fecha hace 6 meses
 
   const query = `
-    SELECT YEAR(fecha_compra) AS anio, 
-    MONTH(fecha_compra) AS mes, SUM(precio * cantidad_producto) AS total_ganancias
+    SELECT YEAR(fecha_compra) AS anio, MONTH(fecha_compra) AS mes, SUM(precio * cantidad_producto) AS total_ganancias
     FROM compra
     JOIN producto ON compra.idProducto = producto.idProducto
     WHERE fecha_compra BETWEEN ? AND ?
@@ -990,46 +865,6 @@ app.get('/ganancias/mensuales', (req, res) => {
     }
   });
 });
-
-// Ganancias mensuales Grafica x idUsuario
-app.get('/ganancias/mensuales/:idUsuario', (req, res) => {
-  // Obtener el idUsuario desde req.params en lugar de req.body
-  const { idUsuario } = req.params;
-  
-  // Definir la fecha actual y la fecha hace 6 meses
-  const fechaActual = moment().format('YYYY-MM-DD'); // Fecha actual en formato 'YYYY-MM-DD'
-  const fechaInicio = moment().subtract(6, 'months').format('YYYY-MM-DD'); // Fecha hace 6 meses
-  
-  // Consulta SQL con filtro de fechas y idUsuario
-  const query = `
-    SELECT 
-      YEAR(fecha_compra) AS anio, 
-      MONTH(fecha_compra) AS mes, 
-      SUM(precio * cantidad_producto) AS total_ganancias
-    FROM 
-      compra
-    JOIN 
-      producto ON compra.idProducto = producto.idProducto
-    WHERE 
-      producto.idUsuario = ?
-      AND fecha_compra BETWEEN ? AND ? -- Filtrar entre fechaInicio y fechaActual
-    GROUP BY 
-      YEAR(fecha_compra), 
-      MONTH(fecha_compra)
-    ORDER BY 
-      anio, mes;
-  `;
-
-  // Ejecutar la consulta con los parámetros idUsuario, fechaInicio y fechaActual
-  connection.query(query, [idUsuario, fechaInicio, fechaActual], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
 
 app.get('/ganancias/mensuales/:idUsuario', (req, res) => {
   // Obtener la fecha actual y la fecha hace 6 meses
@@ -1054,7 +889,6 @@ app.get('/ganancias/mensuales/:idUsuario', (req, res) => {
   });
 });
 
-//Productos más vendidos 
 app.get('/mas-vendidos', (req, res) => {
   const fechaActual = new Date();
   const anioActual = fechaActual.getFullYear();
@@ -1076,53 +910,6 @@ LIMIT 5;
   `;
 
   connection.query(query, [anioActual, mesActual], (error, results) => {
-    if (error) {
-      console.error('Error en la consulta:', error);
-      res.status(500).json({ message: 'Error en la consulta' });
-    } else {
-      //console.log('Resultados de consulta:', results);
-
-      if (results.length === 0) {
-        res.status(404).json({ message: 'Productos no encontrados' });
-      } else {
-        res.json(results);
-      }
-    }
-  });
-});
-
-//Productos más vendidos x idUsuario
-app.get('/mas-vendidos/:idUsuario', (req, res) => {
-  const { idUsuario } = req.params;
-  const fechaActual = new Date();
-  const anioActual = fechaActual.getFullYear();
-  const mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11 en JavaScript
-
-  const query = `SELECT 
-    producto.producto AS nombre_producto, 
-    producto.descripcion, 
-    producto.precio, 
-    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
-    SUM(compra.cantidad_producto) AS total_vendido
-FROM 
-    compra
-JOIN 
-    producto ON compra.idProducto = producto.idProducto
-WHERE 
-    producto.idUsuario = ?  
-    AND YEAR(compra.fecha_compra) = ?
-    AND MONTH(compra.fecha_compra) = ?
-GROUP BY 
-    producto.producto, 
-    producto.descripcion, 
-    producto.precio, 
-    primera_foto
-ORDER BY 
-    total_vendido DESC
-LIMIT 5;
-  `;
-
-  connection.query(query, [idUsuario, anioActual, mesActual], (error, results) => {
     if (error) {
       console.error('Error en la consulta:', error);
       res.status(500).json({ message: 'Error en la consulta' });
@@ -1170,7 +957,6 @@ app.get('/cupones', (req, res) => {
     }
   });
 });
-
 
 // Obtener un cupón por ID
 app.get('/cupones/:id', (req, res) => {
@@ -1294,6 +1080,356 @@ app.delete('/cupones/:id', (req, res) => {
   });
 });
 //END Cupones - Pedro
+
+
+//Ofertas - Pedro
+//Obtener todos los ofertas
+app.get('/ofertas', (req, res) => {
+  const query = 'SELECT * FROM ofertas';
+  connection.query(query, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      // Convertir status numérico a texto
+      const mappedResults = results.map(oferta => ({
+        ...oferta,
+        status: oferta.status === 1 ? 'activo' : 'inactivo'
+      }));
+      res.json(mappedResults);
+    }
+  });
+});
+
+
+// Obtener un cupón por ID
+/* app.get('/ofertas/:id', (req, res) => {
+  const query = 'SELECT * FROM ofertas WHERE idOferta = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Cupón no encontrado' });
+    } else {
+      const oferta = results[0];
+      res.json({
+        ...oferta,
+        status: oferta.status === 1 ? 'activo' : 'inactivo'
+      });
+    }
+  });
+}); */
+
+// Agregar un nuevo cupón
+app.post('/ofertas-nuevo', (req, res) => {
+  const { oferta, descripcion, fechaRegistro, vigencia, status } = req.body;
+
+  // Asegurarse de que status es un número entero
+  const statusValue = parseInt(status, 10);
+
+  if (isNaN(statusValue)) {
+    return res.status(400).json({ message: 'Estado inválido' });
+  }
+
+  const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
+  const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
+
+  const query = `
+    INSERT INTO ofertas (oferta, descripcion, fechaRegistro, vigencia, status)
+    VALUES (?, ?, ?, ?, ?)`;
+
+  connection.query(query, [oferta, descripcion, formattedFechaRegistro, formattedVigencia, statusValue], (error, results) => {
+    if (error) {
+      console.error('Error en la consulta de inserción:', error);
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(201).json({
+        idOferta: results.insertId,
+        oferta,
+        descripcion,
+        fechaRegistro: formattedFechaRegistro,
+        vigencia: formattedVigencia,
+        status: statusValue
+      });
+    }
+  });
+});
+
+
+// Actualizar un cupón
+/* app.put('/cupones/:id', (req, res) => {
+  const { cupon, descripcion, fechaRegistro, vigencia, status } = req.body;
+
+  // Convertir `status` a número
+  const statusValue = parseInt(status, 10);
+
+  console.log('Datos recibidos en el backend:', {
+    cupon,
+    descripcion,
+    fechaRegistro,
+    vigencia,
+    status: statusValue
+  });
+
+  // Verificar si `statusValue` es un número válido
+  if (isNaN(statusValue) || (statusValue !== 0 && statusValue !== 1)) {
+    return res.status(400).json({ message: 'Estado inválido' });
+  }
+
+  const formattedFechaRegistro = new Date(fechaRegistro).toISOString().split('T')[0];
+  const formattedVigencia = new Date(vigencia).toISOString().split('T')[0];
+
+  const query = `
+  UPDATE cupones
+  SET cupon = ?, descripcion = ?, fechaRegistro = ?, vigencia = ?, status = ?
+  WHERE idCupon = ?`;
+
+
+  connection.query(query, [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id], (error, results) => {
+    console.log('Datos enviados a la consulta:', [cupon, descripcion, formattedFechaRegistro, formattedVigencia, statusValue, req.params.id]);
+    console.log('Resultados de la consulta:', results);
+    
+    if (error) {
+      console.error('Error en la consulta de actualización:', error);
+      res.status(400).json({ message: error.message });
+    } else {
+      if (results.affectedRows === 0) {
+        res.status(404).json({ message: 'Cupón no encontrado' });
+      } else {
+        res.json({
+          idCupon: req.params.id,
+          cupon,
+          descripcion,
+          fechaRegistro: formattedFechaRegistro,
+          vigencia: formattedVigencia,
+          status: statusValue
+        });
+      }
+    }
+  });  
+}); */
+
+
+// Eliminar un cupón
+/* app.delete('/cupones/:id', (req, res) => {
+  const query = 'DELETE FROM cupones WHERE idCupon = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Cupón no encontrado' });
+    } else {
+      res.json({ message: 'Cupón eliminado' });
+    }
+  });
+}); */
+//END Cupones - Pedro
+
+
+
+
+
+
+
+
+
+
+
+
+//Pedro PRODUCTOS
+// Obtener todos los productos por idUs
+/* app.get('/productosidus/:idUsuario', (req, res) => {
+
+  const query = 'SELECT * FROM producto where idUsuario = ?';
+  connection.query(query, [req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.json(results);
+    }
+  });
+}); */
+
+
+// Obtener un producto por ID
+/* app.get('/productos/:id', (req, res) => {
+  const query = 'SELECT * FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+ */
+// Obtener un producto por ID
+/* app.get('/detalleproducto/:id', (req, res) => {
+  const query = 'SELECT * FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.length === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+}); */
+
+
+//Agregar Producto
+/* app.post('/producto-nuevo', upload.array('foto',4), (req, res) => {
+  const {idUsuario, sku, Marca, producto, precio, idTalla, descripcion , idOferta,  fecha_ingreso,
+    cantidad} = req.body;
+  let foto = '';
+     if (req.files && req.files.length > 0) {
+      foto = req.files.map(file => file.filename).join(',');
+    }
+  if (producto && sku && Marca && precio && idTalla && descripcion && idUsuario &&  cantidad ) {
+    const query = 'INSERT INTO producto (producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta, fecha_ingreso,cantidad) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?)';
+    connection.query(query, [producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario , idOferta ,  fecha_ingreso,cantidad], (error, results) => {
+
+      if (error) {
+        console.error( error);
+        res.status(400).json({ message: 'Error ', error });
+      } else {
+        const productId = results.insertId;
+        res.status(201).json({ id: productId, producto, sku, Marca, precio, idTalla, descripcion, foto, idUsuario, idOferta,  fecha_ingreso,cantidad });
+      }
+    });
+  } else {
+    res.status(400).json({ message: 'Todos los campos son requeridos' });
+  }
+}); */
+
+// Actualizar un producto
+/* app.put('/productos/:id', upload.array('foto',4), (req, res) => {
+  //console.log(req.body)
+  const { producto, sku, Marca, precio, idTalla, descripcion, idOferta,  fecha_ingreso, cantidad, idUsuario} = req.body;
+  let foto = ''
+  console.log(req.files )
+  if (req.files && req.files.length > 0) {
+    
+    foto = req.files.map(file => file.filename).join(','); // Une los nombres de los archivos con comas
+  }
+  const updateQuery = foto
+    ? 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, foto = ?,  idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=?  WHERE idProducto = ?'
+    : 'UPDATE producto SET producto = ?, sku = ?, Marca = ?, precio = ?, idTalla = ?, descripcion = ?, idOferta=? ,  fecha_ingreso=?, cantidad=?, idUsuario=? WHERE idProducto = ?';
+   // console.log(updateQuery)
+    const queryParams = foto
+    ? [producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id]
+    : [producto, sku, Marca, precio, idTalla, descripcion, idOferta, fecha_ingreso, cantidad, idUsuario, req.params.id];
+    console.log(queryParams)
+  connection.query(updateQuery, queryParams, (error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ id: req.params.id, producto, sku, Marca, precio, idTalla, descripcion, foto, idOferta,  fecha_ingreso, cantidad, idUsuario });
+    }
+  });
+});
+ */
+// Eliminar un producto
+/* app.delete('/productos/:id', (req, res) => {
+  const query = 'DELETE FROM producto WHERE idProducto = ?';
+  connection.query(query, [req.params.id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ message: 'Producto eliminado' });
+    }
+  });
+}); */
+
+// Eliminar la imagen de un producto
+/* app.delete('/productos/:id/foto', (req, res) => {
+  const { id } = req.params;
+  const query = 'UPDATE producto SET foto = "" WHERE idProducto = ?'; // Cambiar a un valor vacío
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error(`Error al eliminar la imagen del producto con ID ${id}:`, error);
+      res.status(500).json({ message: 'Error interno del servidor al eliminar la imagen' });
+    } else if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    } else {
+      res.json({ message: 'Imagen eliminada exitosamente' });
+    }
+  });
+});
+ */
+
+
+// Ruta para obtener las suscripciones
+app.get('/suscripciones', (req, res) => {
+  connection.query('SELECT * FROM suscripcion', (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
+});
+
+// Ruta para agregar una nueva suscripción
+app.post('/suscripcion', (req, res) => {
+  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub } = req.body;
+  connection.query('INSERT INTO suscripcion (nombre_sub, descripcion_sub, duracion_sub, precio_sub) VALUES (?, ?, ?, ?)', [nombre_sub, descripcion_sub, duracion_sub, precio_sub], (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.status(201).json({ message: 'Suscripción agregada con éxito' });
+  });
+});
+
+// Ruta para editar una suscripción
+app.put('/api/suscripcion/:id_sub', (req, res) => {
+  const { id_sub } = req.params;
+  const { nombre_sub, descripcion_sub, duracion_sub, precio_sub } = req.body;
+  connection.query('UPDATE suscripcion SET nombre_sub = ?, descripcion_sub = ?, duracion_sub = ?, precio_sub = ? WHERE id_sub = ?', [nombre_sub, descripcion_sub, duracion_sub, precio_sub, id_sub], (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Suscripción actualizada con éxito' });
+  });
+});
+
+// Ruta para eliminar una suscripción
+app.delete('/suscripcion/:id_sub', (req, res) => {
+  const { id_sub } = req.params;
+  connection.query('DELETE FROM suscripcion WHERE id_sub = ?', [id_sub], (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.sendStatus(204); // No content
+  });
+});
+
+
+// Ruta para comprar una suscripción
+app.post('/comprar-suscripcion', (req, res) => {
+  const { idUsuario, id_sub } = req.body;
+
+  // Verificar la suscripción
+  connection.query('SELECT * FROM suscripcion WHERE id_sub = ?', [id_sub], (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    if (results.length === 0) return res.status(404).json({ error: 'Suscripción no encontrada' });
+
+    const suscripcion = results[0];
+
+    // Actualizar el rol del usuario
+    connection.query('UPDATE usuario SET idRol = ? WHERE idUsuario = ?', [id_sub, idUsuario], (err) => {
+      if (err) return res.status(500).json({ error: err });
+
+      // Guardar la suscripción del usuario
+      const fechaFin = new Date(Date.now() + suscripcion.duracion_sub * 24 * 60 * 60 * 1000);
+      connection.query('INSERT INTO usuarioxsub (idUsuario, id_sub, fecha_inicio, fecha_fin) VALUES (?, ?, NOW(), ?)', [idUsuario, id_sub, fechaFin], (err) => {
+        if (err) return res.status(500).json({ error: err });
+        res.status(201).json({ message: 'Suscripción realizada con éxito' });
+      });
+    });
+  });
+});
+
+
 
 app.listen(3001, () => {
   console.log(`Server is running on port: ${port}`);
