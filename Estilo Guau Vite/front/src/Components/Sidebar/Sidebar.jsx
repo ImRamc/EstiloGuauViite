@@ -30,12 +30,20 @@ const componente = ({ isOpen, toggleSidebar }) => {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/compras">
+            <Link to="/ofertas">
             <Sidebar.Item icon={HiReceiptTax } className='hover:bg-custom'>Ofertas</Sidebar.Item>
             </Link>
 
             <Link to="/cupones" >
             <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Cupones</Sidebar.Item>
+            </Link>
+
+            <Link to="/suscripcion" >
+            <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripcion</Sidebar.Item>
+            </Link>
+
+            <Link to="/suscripcion/form" >
+            <Sidebar.Item icon={HiTicket} className='hover:bg-custom'>Suscripcion Add</Sidebar.Item>
             </Link>
 
             <Link to="/usuarios">            
