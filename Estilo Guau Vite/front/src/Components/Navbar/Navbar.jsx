@@ -1,19 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { UserContext } from '../../Context/UserContext';
-import { Disclosure, Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/react/24/solid';
 import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import './Navbar.css';
 import { Dropdown, Navbar } from "flowbite-react";
+import ShoppingCart from '../ShoppingCart/ShoppingCart'
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
 
 const NavbarAdmin = () => {
   const { userData, logout } = useContext(UserContext);
   const { idUsuario, idRol } = userData;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => setIsOpen(true);
 
 
   const handleLogout = () => {
@@ -41,13 +41,13 @@ const NavbarAdmin = () => {
           </Navbar.Brand>
           {/* Elementos a la derecha */}
           <div className="flex items-center space-x-4">
-            {/* Cart button */}
-            <Link to="/">
-              <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
-                <span className="sr-only">Open user menu</span>
-                <ShoppingCartIcon className="h-9 w-9 text-red-500" aria-hidden="true" />
-              </button>
-            </Link>
+          <div className="flex items-center space-x-4">
+  <button onClick={handleOpen} className="p-2 focus:outline-none">
+    <ShoppingCartIcon className="h-8 w-8 text-red-500" aria-hidden="true" />
+  </button>
+  <ShoppingCart isOpen={isOpen} setIsOpen={setIsOpen} />
+</div>
+
             {/*Tienda*/}
             <Link to="/Tienda">
               <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">

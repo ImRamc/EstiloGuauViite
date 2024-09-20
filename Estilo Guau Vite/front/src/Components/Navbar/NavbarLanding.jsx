@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { UserContext } from '../../Context/UserContext';
 import { Disclosure, Menu } from '@headlessui/react';
 import { Link } from 'react-router-dom';
@@ -6,14 +6,15 @@ import { ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/react/24/solid';
 import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import './Navbar.css';
 import { Dropdown, Navbar } from "flowbite-react";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+import ShoppingCart from '../ShoppingCart/ShoppingCart'
 
 const NavbarAdmin = () => {
   const { userData, logout } = useContext(UserContext);
-  const { idUsuario , idRol} = userData;
+  const { idUsuario, idRol } = userData;
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => setIsOpen(true);
 
 
   const handleLogout = () => {
@@ -23,24 +24,24 @@ const NavbarAdmin = () => {
   return (
     <section>
       <Navbar fluid rounded>
-      <div className="bg-black fixed w-full z-20 top-0 start-0 border-b p-4 flex justify-between items-center border-gray-700 shadow-md">          <Navbar.Brand className="">
-            <div className="flex items-center">
-              {/* Logo */}
-              <Link to="/">
-                <img className=" block h-20 w-auto" src="../../images/Logo.png" alt="" />
-              </Link>
-              {/* search button */}
-              <Link to="/">
-                <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring- px-2">
-                  <span className="sr-only">Open user menu</span>
-                  <MagnifyingGlassIcon className="h-9 w-9 text-red-500" aria-hidden="true" strokeWidth={3} />
-                </button>
-              </Link>
-            </div>
-          </Navbar.Brand>
+        <div className="bg-black fixed w-full z-20 top-0 start-0 border-b p-4 flex justify-between items-center border-gray-700 shadow-md">          <Navbar.Brand className="">
+          <div className="flex items-center">
+            {/* Logo */}
+            <Link to="/">
+              <img className=" block h-20 w-auto" src="../../images/Logo.png" alt="" />
+            </Link>
+            {/* search button */}
+            <Link to="/">
+              <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring- px-2">
+                <span className="sr-only">Open user menu</span>
+                <MagnifyingGlassIcon className="h-9 w-9 text-red-500" aria-hidden="true" strokeWidth={3} />
+              </button>
+            </Link>
+          </div>
+        </Navbar.Brand>
 
-                  {/* Encabezado en el centro */}
-                  <div className="text-center flex-grow">
+          {/* Encabezado en el centro */}
+          <div className="text-center flex-grow">
             <div className="text-white text-5xl font-semibold tracking-widest font-roboto">
               ESTILO GUAU
             </div>
@@ -49,12 +50,12 @@ const NavbarAdmin = () => {
           {/* Elementos a la derecha */}
           <div className="flex items-center space-x-4">
             {/* Cart button */}
-            <Link to="/">
-              <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
-                <span className="sr-only">Open user menu</span>
-                <ShoppingCartIcon className="h-9 w-9 text-red-500" aria-hidden="true" />
+            <div className="flex items-center space-x-4">
+              <button onClick={handleOpen} className="p-2 focus:outline-none">
+                <ShoppingCartIcon className="h-8 w-8 text-red-500" aria-hidden="true" />
               </button>
-            </Link>
+              <ShoppingCart isOpen={isOpen} setIsOpen={setIsOpen} />
+            </div>
             {/*Tienda*/}
             <Link to="/Tienda">
               <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-white">
@@ -94,35 +95,35 @@ const NavbarAdmin = () => {
                   )}
                 </Dropdown.Item>
 
-                     {/**Panel de administracion */}
-                   {idRol === 2 && (
-                    <Dropdown.Item className="hover:bg-custom">
-                       <Link
+                {/**Panel de administracion */}
+                {idRol === 2 && (
+                  <Dropdown.Item className="hover:bg-custom">
+                    <Link
                       to="/dashboard"
                     >
                       Dashboard
                     </Link>
-                    </Dropdown.Item>
-                  )}
+                  </Dropdown.Item>
+                )}
 
                 {/**Servicios */}
                 <Dropdown.Item className="hover:bg-custom">Servicios</Dropdown.Item>
-               
+
                 <Dropdown.Divider />
-                 {/*Logout*/}
-                 <Dropdown.Item className="hover:bg-custom">
+                {/*Logout*/}
+                <Dropdown.Item className="hover:bg-custom">
                   {idUsuario ? (
                     <Link
                       to="/"
                       onClick={handleLogout}
-                    
+
                     >
                       Cerrar sesión
                     </Link>
                   ) : null}
                 </Dropdown.Item>
               </Dropdown>
-              
+
               <Navbar.Toggle />
             </div>
           </div>
