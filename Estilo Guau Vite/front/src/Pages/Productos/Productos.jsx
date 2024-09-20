@@ -11,14 +11,20 @@ const Productos = () => {
 
   const [productos, setProductos] = useState([]);
   const { userData } = useContext(UserContext);
+  const { idRol } = userData;
+  
 
   useEffect(() => {
-    obtenerProductos();
-  }, []);
+    if (idRol === 2) {
+      obtenerProductos(`/productosidus/${userData.idUsuario}}`);
+    } else if (idRol === 3) {
+      obtenerProductos(`/productos`);  // Ruta diferente para idRol 3
+    }
+  }, [idRol]);
 
-  const obtenerProductos = async () => {
+  const obtenerProductos = async (ruta) => {
     try {
-      const response = await axios.get(`http://localhost:3001/productosidus/${userData.idUsuario}`);
+      const response = await axios.get(`http://localhost:3001${ruta}`);
       setProductos(response.data);
       //console.log(productos)
     } catch (error) {

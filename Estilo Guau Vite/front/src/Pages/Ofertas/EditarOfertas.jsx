@@ -77,13 +77,14 @@ const EditarCupon = () => {
               Porcentaje de oferta
               </label>
               <input
-                type="text"
+                type="number"
                 id="cupon"
                 name="cupon"
                 value={cupon.cupon}
                 onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Ingrese el código del cupón"
+                min="0" // Valor mínimo permitido
               />
             </div>
 

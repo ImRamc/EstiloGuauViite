@@ -1171,6 +1171,7 @@ app.get('/cupones', (req, res) => {
   });
 });
 
+
 // Obtener un cupón por ID
 app.get('/cupones/:id', (req, res) => {
   const query = 'SELECT * FROM cupones WHERE idCupon = ?';

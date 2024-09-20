@@ -28,7 +28,7 @@ ChartJS.register(
   Legend
 );
 
-const Graficas = () => {
+const GraficasSA = () => {
   const { userData } = useContext(UserContext);
 
     const [ventasMensuales, setVentasMensuales] = useState([]);
@@ -56,7 +56,7 @@ const Graficas = () => {
         const fetchVentasMensuales = async () => {
       // Función para obtener ventas mensuales
       try {
-      const response = await axios.get(`http://localhost:3001/ventas/mensuales/${userData.idUsuario}`);
+      const response = await axios.get(`http://localhost:3001/ventas/mensuales`);
       setVentasMensuales(response.data);
       //console.log(response.data)
     } catch (error) {
@@ -67,7 +67,7 @@ const Graficas = () => {
     // Función para obtener ventas semanales
     const fetchVentasSemanales = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/ventas/semana/${userData.idUsuario}`);
+        const response = await axios.get(`http://localhost:3001/ventas/semana`);
         setVentasSemanales(response.data[0]?.total_ventas_semana);
       } catch (error) {
         console.error('Error fetching ventas semanales:', error);
@@ -77,7 +77,7 @@ const Graficas = () => {
       // Función para obtener ventas diarias
   const fetchVentasDiarias = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/ventas/dia/${userData.idUsuario}`);
+      const response = await axios.get(`http://localhost:3001/ventas/dia`);
       setVentasDiarias(response.data[0]?.total_ventas_dia || 0);
     } catch (error) {
       console.error('Error fetching ventas diarias:', error);
@@ -107,7 +107,7 @@ const Graficas = () => {
     useEffect(() => {
       const fetchProductosMasVendidos = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/mas-vendidos/${userData.idUsuario}`);
+          const response = await axios.get(`http://localhost:3001/mas-vendidos`);
           console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
           
           setProductosMasVendidos(response.data);
@@ -147,7 +147,7 @@ const Graficas = () => {
     useEffect(() => {
       const fetchGananciasMensuales = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/ganancias/mensuales/${userData.idUsuario}`);
+          const response = await axios.get(`http://localhost:3001/ganancias/mensuales`);
           const data = response.data;
           //console.log(data)
           const labels = data.map(item => `${item.mes}/${item.anio}`);
@@ -191,7 +191,7 @@ const Graficas = () => {
   return (
     <div className="container mx-auto px-32 p-4 grid grid-cols-3 gap-4">
     <h1 className="text-start text-4xl font-bold">Resumen de ganancias</h1>
-      <div className="col-span-3 grid grid-cols-3 gap-4">
+    <div className="col-span-3 grid grid-cols-3 gap-4">
         <div className="p-4 bg-custom rounded-lg shadow-xl text-center">
           <h2 className="my-2 text-start text-xl font-semibold">Ventas por Mes</h2>
           <p className="m-2 text-start text-3xl font-bold">
@@ -239,4 +239,4 @@ const Graficas = () => {
     </div>
   );
 };
-export default Graficas;
+export default GraficasSA;

@@ -96,7 +96,7 @@ const NavbarAdmin = () => {
                 </Dropdown.Item>
 
                 {/**Panel de administracion */}
-                {idRol === 2 && (
+                {idRol === 2 && idRol===3 (
                   <Dropdown.Item className="hover:bg-custom">
                     <Link
                       to="/dashboard"

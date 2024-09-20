@@ -3,12 +3,13 @@ import { UserContext } from '../../Context/UserContext';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import Graficas from '../../Components/Graficas/Graficas';
+import GraficasSA from '../../Components/Graficas/Graficas';
 import FooterAdmin from '../../Components/Footer/FooterAdmin';
 
 
 const Dashboard = () => {
   const { userData, logout } = useContext(UserContext);
-  const { idUsuario } = userData;
+  const { idRol } = userData;
 
 
   return (
@@ -18,8 +19,13 @@ const Dashboard = () => {
            <Sidebar />   
        </div>
         <div>
-          <Graficas/>
-        </div>
+        {idRol === 3 ? (
+          <GraficasSA /> // Mostrar GraficasSA si el idRol es 3
+        ) : idRol === 2 ? (
+          <Graficas /> // Mostrar Graficas si el idUsuario es 2
+        ) : (
+          <div>No tienes acceso a esta vista.</div>
+        )}        </div>
         <div className="">
            <FooterAdmin/>
         </div>

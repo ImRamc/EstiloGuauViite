@@ -22,6 +22,9 @@ import FormularioOfertas from './Pages/Ofertas/FormularioOfertas';
 import Usuarios from './Pages/Usuarios/Usuarios';
 import FormularioUsuario from './Pages/Usuarios/formulariousuario';
 import EditarUsuario from './Pages/Usuarios/EditarUsuario';
+import Suscripcion from './Pages/Suscripcion/Suscripcion';
+import FormularioSub from './Pages/Suscripcion/FormularioSub';
+import EditarSub from './Pages/Suscripcion/EditarSub';
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -40,7 +43,7 @@ const RoutesComponent = () => {
         <Route
           path="/Compras"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Compras />
             ) : (
               <Navigate to="/Login" />
@@ -50,7 +53,7 @@ const RoutesComponent = () => {
         <Route
           path="/Dashboard"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ?(
               <Dashboard />
             ) : (
               <Navigate to="/Login" />
@@ -60,7 +63,7 @@ const RoutesComponent = () => {
         <Route
           path="/Productos"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Productos />
             ) : (
               <Navigate to="/Login" />
@@ -70,7 +73,7 @@ const RoutesComponent = () => {
         <Route
           path="/productos/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol &&(idRol === 3 || idRol === 2) ? (
               <FormularioProducto />
             ) : (
               <Navigate to="/Login" />
@@ -80,7 +83,7 @@ const RoutesComponent = () => {
         <Route
           path="/productos/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarProducto />
             ) : (
               <Navigate to="/Login" />
@@ -91,7 +94,7 @@ const RoutesComponent = () => {
         <Route
           path="/DetalleProducto/:idProducto"
           element={
-            idRol && idRol === 1 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <DetalleProducto />
             ) : (
               <Navigate to="/Login" />
@@ -111,7 +114,7 @@ const RoutesComponent = () => {
         <Route
           path="/formUs"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 1 || idRol === 2 || idRol === 3) ? (
               <FormUs />
             ) : (
               <Navigate to="/Login" />
@@ -122,7 +125,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios"
           element={
-            idRol && idRol === 2 ? (
+            idRol && idRol === 3 ? (
               <Usuarios />
             ) : (
               <Navigate to="/Login" />
@@ -133,7 +136,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && idRol === 3 ? (
               <FormularioUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -143,7 +146,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && idRol === 3 ? (
               <EditarUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -153,7 +156,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Ofertas />
             ) : (
               <Navigate to="/Login" />
@@ -164,7 +167,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormularioOfertas />
             ) : (
               <Navigate to="/Login" />
@@ -174,7 +177,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarOfertas />
             ) : (
               <Navigate to="/Login" />
@@ -184,7 +187,7 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Cupones />
             ) : (
               <Navigate to="/Login" />
@@ -195,7 +198,7 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormularioCupon />
             ) : (
               <Navigate to="/Login" />
@@ -205,8 +208,39 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarCupon />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Suscripcion"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <Suscripcion />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/Suscripcion/formulario"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <FormularioSub />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Suscripcion/editar/:id"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <EditarSub />
             ) : (
               <Navigate to="/Login" />
             )

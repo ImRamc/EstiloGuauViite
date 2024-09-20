@@ -303,13 +303,14 @@ const EditarProducto = () => {
     <div className="mb-4">
       <label htmlFor="cantidad" className="block text-gray-700 font-bold mb-2">Existencias del producto</label>
       <input
-        type="text"
+        type="number"
         id="cantidad"
         name="cantidad"
         value={producto.cantidad}
         onChange={handleChange}
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         placeholder="Ingrese las existencias del producto"
+        min="0" // Valor mínimo permitido
       />
     </div>
   </div>

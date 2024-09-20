@@ -1,38 +1,26 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
-import { UserContext } from '../../Context/UserContext';
 
-const Cupones = () => {
-  const { userData } = useContext(UserContext);
-  const { idRol, idUsuario } = userData; // Obtener idRol e idUsuario
+const Suscripcon = () => {
   const [cupones, setCupones] = useState([]);
 
-  // useEffect para obtener cupones dependiendo del rol
   useEffect(() => {
-    const obtenerCupones = async () => {
-      try {
-        let url;
-        if (idRol === 2) {
-          url = `http://localhost:3001/cuponesxus/${idUsuario}`; // Ruta para idRol 2
-        } else if (idRol === 3) {
-          url = `http://localhost:3001/cupones`; // Ruta diferente para idRol 3
-        }
-
-        const response = await axios.get(url);
-        setCupones(response.data);
-      } catch (error) {
-        console.error('Error al obtener los cupones:', error);
-      }
-    };
-
     obtenerCupones();
-  }, [idRol, idUsuario]); // Dependencias actualizadas para que se ejecute al cambiar idRol
+  }, []);
 
-  // Función para eliminar cupon
+  const obtenerCupones = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/cupones');
+      setCupones(response.data);
+    } catch (error) {
+      console.error('Error al obtener los cupones:', error);
+    }
+  };
+
   const eliminarCupon = async (idCupon) => {
     try {
       await axios.delete(`http://localhost:3001/cupones/${idCupon}`);
@@ -42,12 +30,11 @@ const Cupones = () => {
     }
   };
 
-  // Función para formatear la fecha
   const formatDate = (dateString) => {
     if (!dateString) return ''; // Maneja casos de fecha nula o indefinida
     const date = new Date(dateString);
     return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-  };
+  };  
 
   return (
     <div className="">
@@ -57,12 +44,12 @@ const Cupones = () => {
         
 
           <div className="carrito-container mx-4 flex-1 ">
-          <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Cupones</h2>
-           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas los cupones</p>
+          <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Suscripciones</h2>
+           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas las suscripciones</p>
             <div className="text-left justify-start pb-10">
-              <Link to="/cupones/formulario">
+              <Link to="/suscripcion/formulario">
                 <button className="bg-custom border hover:bg-second text-black font-medium py-2 px-4 rounded">
-                  Agregar Cupón
+                  Agregar suscripción
                 </button>
               </Link>
             </div>
@@ -71,11 +58,10 @@ const Cupones = () => {
               <table className="min-w-full bg-white border-collapse border border-black">
                 <thead className="bg-custom text-black text-medium">
                   <tr>
-                    <th className="py-3 px-4 text-center border border-white-900">Descuento</th>
-                    <th className="py-3 px-4 text-center border border-white-900">CUPON</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Fecha Registro</th>
+                    <th className="py-3 px-4 text-center border border-white-900">Nombre de la suscripción</th>
+                    <th className="py-3 px-4 text-center border border-white-900">Descripcion</th>
+                    <th className="py-3 px-4 text-center border border-white-900">Precio</th>
                     <th className="py-3 px-4 text-center border border-white-900">Vigencia</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Status</th>
                     <th className="py-3 px-4 text-center border border-white-900">Editar</th>
                     <th className="py-3 px-4 text-center border border-white-900">Eliminar</th>
                   </tr>
@@ -85,15 +71,10 @@ const Cupones = () => {
                     <tr key={cupon.idCupon}>
                       <td className="py-3 px-4 border border-gray-300">{cupon.cupon}</td>
                       <td className="py-3 px-4 border border-gray-300">{cupon.descripcion}</td>
-                      <td className="py-3 px-4 border border-gray-300">{formatDate(cupon.fechaRegistro)}</td>
-                      <td className="py-3 px-4 border border-gray-300">{formatDate(cupon.vigencia)}</td>
-                      <td className="py-3 px-4 border border-gray-300">
-                        <span className={`status-label ${cupon.status === 'activo' ? 'text-green-500' : 'text-red-500'} uppercase`}>
-                            {cupon.status}
-                        </span>
-                     </td>
+                      <td className="py-3 px-4 border border-gray-300">{cupon.precio}</td>
+                      <td className="py-3 px-4 border border-gray-300">{cupon.vigencia}</td>
                       <td className="py-3 px-4 text-center border border-gray-300">
-                        <Link to={`/cupones/editar/${cupon.idCupon}`}>
+                        <Link to={`/suscripcion/editar/${cupon.idCupon}`}>
                           <button className="bg-custom border hover:bg-second text-black font-bold rounded-md px-4 py-2">
                             Editar
                           </button>
@@ -114,7 +95,7 @@ const Cupones = () => {
                   {cupones.length === 0 && (
                     <tr>
                       <td colSpan="6" className="py-4 px-6 text-center text-gray-500 border-gray-300">
-                        No hay cupones disponibles.
+                        No hay ofertas disponibles.
                       </td>
                     </tr>
                   )}
@@ -130,4 +111,4 @@ const Cupones = () => {
   );
 };
 
-export default Cupones;
+export default Suscripcon;
