@@ -1,114 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { UserContext } from '../../Context/UserContext';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import FooterAdmin from "../../Components/Footer/FooterAdmin";
+import Footer from "../../Components/Footer/Footer";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
-const Suscripcon = () => {
-  const [cupones, setCupones] = useState([]);
+const Suscripcion = () => {
+  const [suscripciones, setSuscripciones] = useState([]);
+  const { userData } = useContext(UserContext); // Obtener datos del usuario
+  const idUsuario = userData.idUsuario; // Extraer el idUsuario
 
   useEffect(() => {
-    obtenerCupones();
+    obtenerSuscripciones();
   }, []);
 
-  const obtenerCupones = async () => {
+  const obtenerSuscripciones = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/cupones');
-      setCupones(response.data);
+      const response = await axios.get('http://localhost:3001/suscripciones');
+      setSuscripciones(response.data);
     } catch (error) {
-      console.error('Error al obtener los cupones:', error);
+      console.error('Error al obtener las suscripciones:', error);
     }
   };
 
-  const eliminarCupon = async (idCupon) => {
+  const manejarSuscripcion = async (id_sub) => {
     try {
-      await axios.delete(`http://localhost:3001/cupones/${idCupon}`);
-      setCupones(cupones.filter(cupon => cupon.idCupon !== idCupon));
+      const response = await axios.post('http://localhost:3001/comprar-suscripcion', {
+        idUsuario, // Pasar el idUsuario al backend
+        id_sub, // Pasar el id_sub correspondiente
+      });
+      console.log(response.data); // Manejar la respuesta del backend
     } catch (error) {
-      console.error(`Error al eliminar el cupón con ID ${idCupon}:`, error);
+      console.error('Error al realizar la suscripción:', error);
     }
   };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return ''; // Maneja casos de fecha nula o indefinida
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-  };  
 
   return (
-    <div className="">
-      <div className="pl-72 pt-20  pr-24 carrito-page flex flex-col min-h-screen">
+    <div>
       <NavbarAdmin />
-        <Sidebar/>
-        
-
-          <div className="carrito-container mx-4 flex-1 ">
-          <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Suscripciones</h2>
-           <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl ">Resumen de todas las suscripciones</p>
-            <div className="text-left justify-start pb-10">
-              <Link to="/suscripcion/formulario">
-                <button className="bg-custom border hover:bg-second text-black font-medium py-2 px-4 rounded">
-                  Agregar suscripción
-                </button>
-              </Link>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border-collapse border border-black">
-                <thead className="bg-custom text-black text-medium">
-                  <tr>
-                    <th className="py-3 px-4 text-center border border-white-900">Nombre de la suscripción</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Descripcion</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Precio</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Vigencia</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Editar</th>
-                    <th className="py-3 px-4 text-center border border-white-900">Eliminar</th>
+      <Sidebar />
+      <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+        <div className="carrito-container mx-4 flex-1">
+          <h2 className="pl-10 font-bold mb-4 ml-4 text-center text-4xl">Suscripciones Disponibles</h2>
+          <p className="pl-10 font-light mb-4 ml-4 text-center text-1xl">Resumen de todas las suscripciones</p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border-collapse border border-black">
+              <thead className="bg-custom text-black text-medium">
+                <tr>
+                  <th className="py-3 px-4 text-center border border-white-900">Nombre</th>
+                  <th className="py-3 px-4 text-center border border-white-900">Descripción</th>
+                  <th className="py-3 px-4 text-center border border-white-900">Precio</th>
+                  <th className="py-3 px-4 text-center border border-white-900">Suscribirse</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-300">
+                {suscripciones.map(suscripcion => (
+                  <tr key={suscripcion.id_sub}>
+                    <td className="py-3 px-4 border border-gray-300">{suscripcion.nombre_sub}</td>
+                    <td className="py-3 px-4 border border-gray-300">{suscripcion.descripcion_sub}</td>
+                    <td className="py-3 px-4 border border-gray-300">${suscripcion.precio_sub}</td>
+                    <td className="py-3 px-4 text-center border border-gray-300">
+                      <button
+                        className="bg-custom border hover:bg-second text-black font-medium py-2 px-4 rounded"
+                        onClick={() => manejarSuscripcion(suscripcion.id_sub)} // Llamar a manejarSuscripcion con el id_sub correcto
+                      >
+                        Suscribirse
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-300">
-                  {cupones.map(cupon => (
-                    <tr key={cupon.idCupon}>
-                      <td className="py-3 px-4 border border-gray-300">{cupon.cupon}</td>
-                      <td className="py-3 px-4 border border-gray-300">{cupon.descripcion}</td>
-                      <td className="py-3 px-4 border border-gray-300">{cupon.precio}</td>
-                      <td className="py-3 px-4 border border-gray-300">{cupon.vigencia}</td>
-                      <td className="py-3 px-4 text-center border border-gray-300">
-                        <Link to={`/suscripcion/editar/${cupon.idCupon}`}>
-                          <button className="bg-custom border hover:bg-second text-black font-bold rounded-md px-4 py-2">
-                            Editar
-                          </button>
-                        </Link>
-                      </td>
-                      <td className="py-3 px-4 text-center border border-gray-300">
-                        <button
-                          className="bg-white-500 hover:text-second text-custom font-bold py-1 px-2 rounded"
-                          onClick={() => eliminarCupon(cupon.idCupon)}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10">
-                      <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd" />
-                    </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {cupones.length === 0 && (
-                    <tr>
-                      <td colSpan="6" className="py-4 px-6 text-center text-gray-500 border-gray-300">
-                        No hay ofertas disponibles.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                ))}
+                {suscripciones.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="py-4 px-6 text-center text-gray-500 border-gray-300">
+                      No hay suscripciones disponibles.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-        <div className="m-10">
-       <FooterAdmin />
-       </div>
+      </div>
+      <Footer />
     </div>
   );
 };
 
-export default Suscripcon;
+export default Suscripcion;
