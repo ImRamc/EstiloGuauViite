@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
 
@@ -11,14 +11,20 @@ const Productos = () => {
 
   const [productos, setProductos] = useState([]);
   const { userData } = useContext(UserContext);
+  const { idRol } = userData;
+  
 
   useEffect(() => {
-    obtenerProductos();
-  }, []);
+    if (idRol === 2) {
+      obtenerProductos(`/productosidus/${userData.idUsuario}}`);
+    } else if (idRol === 3) {
+      obtenerProductos(`/productos`);  // Ruta diferente para idRol 3
+    }
+  }, [idRol]);
 
-  const obtenerProductos = async () => {
+  const obtenerProductos = async (ruta) => {
     try {
-      const response = await axios.get(`http://localhost:3001/productosidus/${userData.idUsuario}`);
+      const response = await axios.get(`http://localhost:3001${ruta}`);
       setProductos(response.data);
       //console.log(productos)
     } catch (error) {
@@ -116,9 +122,10 @@ const Productos = () => {
             </tbody>
           </table>
         </div>
-      </div>
-      
-       <Footer />
+      </div>      
+       <div className="m-10">
+       <FooterAdmin />
+       </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 
@@ -16,6 +16,7 @@ const EditarProducto = () => {
   const [ofertas, setofertas] = useState([]);
   const [tallas, settallas] = useState([]);
   const navigate = useNavigate(); // Usar useNavigate en lugar de useHistory
+  const obtenerImagenUrl = (foto) => `http://localhost:3001/images/${foto}`;
 
   useEffect(() => {
     
@@ -47,7 +48,8 @@ const EditarProducto = () => {
         const response = await axios.get(`http://localhost:3001/productos/${id}`);
         setProducto(response.data);
         const fotos = response.data.foto.split(',');
-        //console.log(fotos)
+        //console.log(response.data.foto)
+        console.log(fotos)
         setCurrentImage(fotos); // Establecer la URL de la imagen actual
       } catch (error) {
         console.error(`Error al obtener el producto con ID ${id}:`, error);
@@ -118,10 +120,7 @@ const EditarProducto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    
-    
     Object.keys(producto).forEach(key => {
-      
       {if(key==='fecha_ingreso'){
         formData.append(key, new Date().toISOString().split('T')[0]);
       }
@@ -163,7 +162,7 @@ const EditarProducto = () => {
   };
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
        <NavbarAdmin />
        <Sidebar />
       <div className="carrito-container mx-4 flex-1 ">
@@ -304,13 +303,14 @@ const EditarProducto = () => {
     <div className="mb-4">
       <label htmlFor="cantidad" className="block text-gray-700 font-bold mb-2">Existencias del producto</label>
       <input
-        type="text"
+        type="number"
         id="cantidad"
         name="cantidad"
         value={producto.cantidad}
         onChange={handleChange}
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         placeholder="Ingrese las existencias del producto"
+        min="0" // Valor mínimo permitido
       />
     </div>
   </div>
@@ -329,6 +329,23 @@ const EditarProducto = () => {
   </div>
 
   {/* Foto */}
+  <div className="col-span-2 mb-4">
+          <label htmlFor="current_images" className="block text-gray-700 font-bold mb-2">Fotos actuales</label>
+          <div className="flex flex-wrap">
+            {currentImage.length > 0 ? (
+              currentImage.map((key, index) => (
+                <img
+                  key={index}
+                  src={`http://localhost:3001/images/${key}`}
+                  alt={`Foto ${index + 1}`}
+                  className="w-32 h-32 object-cover mr-4 mb-4"
+                />
+              ))
+            ) : (
+              <p>No hay imágenes disponibles.</p>
+            )}
+          </div>
+        </div>
   <div className="col-span-2 mb-4">
     <label htmlFor="foto" className="block text-gray-700 font-bold mb-2">Foto</label>
     <input
@@ -352,7 +369,7 @@ const EditarProducto = () => {
             <div className="text-right items-center">
             <button
               onClick={() => navigate(-1)}
-              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 mt-5  px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Volver
             </button>           
@@ -361,7 +378,9 @@ const EditarProducto = () => {
 </form>
 
       </div>
-      <Footer />
+      <div className="m-10">
+       <FooterAdmin />
+       </div>
     </div>
   );
 };

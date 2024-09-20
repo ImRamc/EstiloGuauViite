@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/UserContext';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/FooterLanding";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 
@@ -116,7 +116,7 @@ const EditarUsuario = () => {
 
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
       <NavbarAdmin/>
        <Sidebar/>
       
@@ -219,7 +219,9 @@ const EditarUsuario = () => {
           </div>
         </form>
       </div>
-      <Footer />
+      <div className="m-10">
+       <FooterAdmin />
+       </div>
     </div>
   );
 };

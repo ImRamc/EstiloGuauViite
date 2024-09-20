@@ -17,15 +17,7 @@ const Footers = () => {
       <Footer container>
       <div className="w-full">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
-          <div>
-            <FooterBrand
-              href=""
-              className=" block h-20 w-auto" 
-              src="../../images/Logo.png"
-              alt="Flowbite Logo"
-              name="Flowbite"
-            />
-          </div>
+         {/*} 
           <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
               <FooterTitle title="about" />
@@ -48,10 +40,19 @@ const Footers = () => {
                 <FooterLink href="#">Terms &amp; Conditions</FooterLink>
               </FooterLinkGroup>
             </div>
-          </div>
+          </div>*/}
         </div>
         <FooterDivider />
         <div className="w-full sm:flex sm:items-center sm:justify-between">
+        <div>
+            <FooterBrand
+              href=""
+              className=" block h-20 w-auto" 
+              src="../../images/Logo.png"
+              alt="Flowbite Logo"
+              name="Flowbite"
+            />
+          </div>
           <FooterCopyright href="#" by="Estilo Guau" year={2024} />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
             <FooterIcon href="#" icon={BsFacebook} />

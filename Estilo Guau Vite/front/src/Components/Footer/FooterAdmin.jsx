@@ -11,13 +11,13 @@ import {
 } from "flowbite-react";
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
 
-const FooterLanding = () => {
+const FooterAdmin = () => {
   return (
-    <section>
-      <Footer container className="bg-black ">
-      <div className="w-full ">
-        <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
-         {/* <div>
+    <section className="w-full absolute left-0">
+      <Footer container>
+      <div className="w-full">
+        <div className="grid w-full h-18 justify-between sm:flex sm:justify-between md:flex md:grid-cols-1 shadow-lg shadow-gray-300">
+           {/* <div>
             <FooterBrand
               href=""
               className=" block h-20 w-auto" 
@@ -26,7 +26,7 @@ const FooterLanding = () => {
               name="Flowbite"
             />
           </div>
-          <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-4 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
               <FooterTitle title="about" />
               <FooterLinkGroup col>
@@ -51,6 +51,7 @@ const FooterLanding = () => {
           </div>*/}
         </div>
         <FooterDivider />
+        
         <div className="w-full sm:flex sm:items-center sm:justify-between">
         <div>
             <FooterBrand
@@ -62,7 +63,7 @@ const FooterLanding = () => {
             />
           </div>
           <FooterCopyright href="#" by="Estilo Guau" year={2024} />
-          <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+          <div className=" flex space-x-6 sm:mt-0 sm:justify-center">
             <FooterIcon href="#" icon={BsFacebook} />
             <FooterIcon href="#" icon={BsInstagram} />
             <FooterIcon href="#" icon={BsTwitter} />
@@ -76,4 +77,4 @@ const FooterLanding = () => {
   );
 };
 
-export default FooterLanding;
+export default FooterAdmin;

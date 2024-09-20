@@ -31,7 +31,7 @@ const Login = () => {
           setIdUsuarioYRol(user.idUsuario, user.idRol, user.nombre, user.email);
           if (user.idRol === 1) {
             navigate('/');
-          } else if (user.idRol === 2) {
+          } else if (user.idRol === 2 || user.idRol ===3) {
             navigate('/dashboard');
           } else {
             // Manejar otros roles si es necesario

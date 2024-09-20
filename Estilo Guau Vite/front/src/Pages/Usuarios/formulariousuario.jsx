@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
 
@@ -88,7 +88,7 @@ const FormularioUsuario = () => {
 
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
        <NavbarAdmin />
       <Sidebar />
       
@@ -216,7 +216,7 @@ const FormularioUsuario = () => {
               <div className="text-right items-center">
             <button
               onClick={() => navigate(-1)}
-              className="bg-red-600 hover:bg-red-500 text-white font-bold px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Volver
             </button>           
@@ -226,6 +226,9 @@ const FormularioUsuario = () => {
 
 
         </div>
+        <div className="m-10">
+       <FooterAdmin />
+       </div>
       </div>
   );
 };

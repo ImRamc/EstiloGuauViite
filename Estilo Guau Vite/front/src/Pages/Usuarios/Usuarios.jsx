@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 
 const Usuarios = () => {
@@ -113,8 +113,9 @@ const Usuarios = () => {
         </div>
       </div>
       
-
-       <Footer />
+      <div className="m-10">
+       <FooterAdmin />
+       </div>
     </div>
   );
 };

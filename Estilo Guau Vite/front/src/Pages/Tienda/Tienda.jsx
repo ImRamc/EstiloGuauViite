@@ -5,12 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '../../Components/Footer/Footer';
 
 
-import PerroTienda1 from "../../img/PerroTienda1.jpeg";
-import PerroTienda2 from "../../img/PerroTienda2.jpeg";
-import PerritoTienda3 from "../../img/PerritoTienda3.jpeg";
-import PerritoTienda4 from "../../img/PerritoTienda4.jpeg";
-
-
 function Tienda() {
   const [products, setProducts] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -31,38 +25,6 @@ function Tienda() {
 
     fetchProducts();
   }, [])
-
-  {{/**const products = [
-    {
-      id: 1,
-      name: 'Producto 1',
-      foto: PerroTienda1,
-      price: 10.00
-    },
-    {
-      id: 2,
-      name: 'Producto 2',
-      foto: PerroTienda2,
-      price: 20.00
-    },
-    {
-      id: 3,
-      name: 'Producto 3',
-      foto: PerritoTienda3,
-      price: 30.00
-    },
-    {
-      id: 4,
-      name: 'Producto 4',
-      foto: PerritoTienda4,
-      price: 40.00
-    },
-    
-  ];
-    const [favorites, setFavorites] = useState([]);
-  const [filterMode, setFilterMode] = useState(null);**/}}
-
-
 
   const handleBuy = (product) => {
     alert(`Has comprado ${product.name} por $${product.price}`);
