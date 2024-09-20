@@ -106,7 +106,14 @@ const NavbarAdmin = () => {
                   )}
 
                 {/**Servicios */}
-                <Dropdown.Item className="hover:bg-custom">Servicios</Dropdown.Item>
+                <Dropdown.Item className="hover:bg-custom">
+                <Link
+                      to="/Suscripciones"
+
+                    >
+                      Suscripciones
+                    </Link>
+                </Dropdown.Item>
                
                 <Dropdown.Divider />
                  {/*Logout*/}

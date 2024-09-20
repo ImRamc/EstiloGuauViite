@@ -27,6 +27,7 @@ module.exports = {
       colors: {
         custom: '#CDD5AE',
         second: '#E9EDC9',
+        amario: '#FFFF00',
       },
       letterSpacing: {
         widest: '0.7em', // Ajusta este valor según tus necesidades

@@ -19,6 +19,7 @@ import FormularioCupon from './Pages/Cupones/FormularioCupon';
 import Usuarios from './Pages/Usuarios/Usuarios';
 import FormularioUsuario from './Pages/Usuarios/formulariousuario';
 import EditarUsuario from './Pages/Usuarios/EditarUsuario';
+import Suscripciones from './Pages/Suscripciones/Suscripciones';
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -32,6 +33,7 @@ const RoutesComponent = () => {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
+        <Route path="/Suscripciones" element={<Suscripciones />} />
 
         {/* Rutas protegidas por rol */}
         <Route
@@ -178,6 +180,7 @@ const RoutesComponent = () => {
             )
           }
         />
+       
 
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" />} />
