@@ -1,7 +1,10 @@
-import React, {useState,useEffect } from 'react';
+import React, {useState,useEffect, useContext } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Bar, Line } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
+import { UserContext } from '../../Context/UserContext';
+
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,6 +29,8 @@ ChartJS.register(
 );
 
 const Graficas = () => {
+  const { userData } = useContext(UserContext);
+
     const [ventasMensuales, setVentasMensuales] = useState([]);
     const [ventasSemanales, setVentasSemanales] = useState(0);
     const [ventasDiarias, setVentasDiarias] = useState(0);
@@ -48,11 +53,12 @@ const Graficas = () => {
       return fechaFormateada;
     };
 
+        const fetchVentasMensuales = async () => {
       // Función para obtener ventas mensuales
-  const fetchVentasMensuales = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/ventas/mensuales');
+      try {
+      const response = await axios.get(`http://localhost:3001/ventas/mensuales/${userData.idUsuario}`);
       setVentasMensuales(response.data);
+      //console.log(response.data)
     } catch (error) {
       console.error('Error fetching ventas mensuales:', error);
     }
@@ -61,8 +67,8 @@ const Graficas = () => {
     // Función para obtener ventas semanales
     const fetchVentasSemanales = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/ventas/semana');
-        setVentasSemanales(response.data[0].total_ventas_semana || 0);
+        const response = await axios.get(`http://localhost:3001/ventas/semana/${userData.idUsuario}`);
+        setVentasSemanales(response.data[0]?.total_ventas_semana);
       } catch (error) {
         console.error('Error fetching ventas semanales:', error);
       }
@@ -71,8 +77,8 @@ const Graficas = () => {
       // Función para obtener ventas diarias
   const fetchVentasDiarias = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/ventas/dia');
-      setVentasDiarias(response.data[0].total_ventas_dia || 0);
+      const response = await axios.get(`http://localhost:3001/ventas/dia/${userData.idUsuario}`);
+      setVentasDiarias(response.data[0]?.total_ventas_dia || 0);
     } catch (error) {
       console.error('Error fetching ventas diarias:', error);
     }
@@ -101,9 +107,9 @@ const Graficas = () => {
     useEffect(() => {
       const fetchProductosMasVendidos = async () => {
         try {
-          const response = await axios.get('http://localhost:3001/mas-vendidos');
+          const response = await axios.get(`http://localhost:3001/mas-vendidos/${userData.idUsuario}`);
           console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
-
+          
           setProductosMasVendidos(response.data);
         } catch (error) {
           console.error('Error al obtener productos más vendidos:', error);
@@ -141,9 +147,9 @@ const Graficas = () => {
     useEffect(() => {
       const fetchGananciasMensuales = async () => {
         try {
-          const response = await axios.get('http://localhost:3001/ganancias/mensuales');
+          const response = await axios.get(`http://localhost:3001/ganancias/mensuales/${userData.idUsuario}`);
           const data = response.data;
-  
+          //console.log(data)
           const labels = data.map(item => `${item.mes}/${item.anio}`);
           const ganancias = data.map(item => item.total_ganancias);
   
@@ -156,6 +162,8 @@ const Graficas = () => {
               },
             ],
           });
+
+          //console.log('Datos recibidos:', response.data);
         } catch (error) {
           console.error('Error fetching ganancias mensuales:', error);
         }
@@ -200,7 +208,7 @@ const Graficas = () => {
           <p className="text-start text-sm text-green-700">Fecha: {obtenerFechaActual()}</p>
         </div>
       </div>
-      <div className="col-span-2 p-4 bg-custom rounded-lg shadow-xl">
+      <div className="col-span-2 pb-8 pl-24 pt-2 h-96 bg-custom rounded-md shadow-xl">
       <h2>Ganancias por mes</h2>
         <Line data={lineData} options={lineOptions} />
       </div>
@@ -222,6 +230,7 @@ const Graficas = () => {
         {productosMasVendidos.length === 0 && <p>No hay productos vendidos aún.</p>}
         </div>
       </div>
+    
     </div>
   );
 };

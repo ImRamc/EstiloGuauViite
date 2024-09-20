@@ -3,6 +3,7 @@ import { UserContext } from '../../Context/UserContext';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import Graficas from '../../Components/Graficas/Graficas';
+import FooterAdmin from '../../Components/Footer/FooterAdmin';
 
 
 const Dashboard = () => {
@@ -11,12 +12,18 @@ const Dashboard = () => {
 
 
   return (
-    <div className="pl-72 pt-12 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-12 pr-20 carrito-page flex flex-col min-h-screen shadow-lg">
        <NavbarAdmin />
-      <Sidebar />       
+       <div className="">
+           <Sidebar />   
+       </div>
         <div>
           <Graficas/>
         </div>
+        <div className="">
+           <FooterAdmin/>
+        </div>
+       
       </div>
   );
 };

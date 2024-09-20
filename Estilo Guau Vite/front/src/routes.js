@@ -16,6 +16,9 @@ import FormUs from './Pages/PerfilUsuario/FormUsuario';
 import Cupones from './Pages/Cupones/Cupones';
 import EditarCupon from './Pages/Cupones/EditarCupon';
 import FormularioCupon from './Pages/Cupones/FormularioCupon';
+import Ofertas from './Pages/Ofertas/Ofertas';
+import EditarOfertas from './Pages/Ofertas/EditarOfertas';
+import FormularioOfertas from './Pages/Ofertas/FormularioOfertas';
 import Usuarios from './Pages/Usuarios/Usuarios';
 import FormularioUsuario from './Pages/Usuarios/formulariousuario';
 import EditarUsuario from './Pages/Usuarios/EditarUsuario';
@@ -142,6 +145,37 @@ const RoutesComponent = () => {
           element={
             idRol && idRol === 2 ? (
               <EditarUsuario />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Ofertas"
+          element={
+            idRol && idRol === 2 ? (
+              <Ofertas />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/Ofertas/formulario"
+          element={
+            idRol && idRol === 2 ? (
+              <FormularioOfertas />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Ofertas/editar/:id"
+          element={
+            idRol && idRol === 2 ? (
+              <EditarOfertas />
             ) : (
               <Navigate to="/Login" />
             )

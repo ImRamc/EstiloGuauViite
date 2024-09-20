@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
 
@@ -125,7 +125,7 @@ const FormularioProducto = () => {
 
 
   return (
-    <div className="pl-72 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
+    <div className="pl-72 pt-20 pr-24 carrito-page flex flex-col min-h-screen shadow-lg">
        <NavbarAdmin />
       <Sidebar />
       
@@ -311,19 +311,30 @@ const FormularioProducto = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-custom hover:bg-second text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Agregar
-              </button>
-            </div>
+  {/* Botón para guardar */}
+  <div className="flex items-center justify-between">
+            <button
+              type="submit"
+              className="bg-custom hover:bg-second text-black font-bold py-2 mt-5 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Actualizar
+            </button>
+            <div className="items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 mt-5 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Volver
+            </button>           
+          </div>
+          </div>
           </form>
 
 
         </div>
-        <Footer />
+        <div className="m-10">
+       <FooterAdmin />
+       </div>
       </div>
   );
 };

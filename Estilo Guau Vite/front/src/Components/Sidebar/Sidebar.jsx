@@ -30,7 +30,7 @@ const componente = ({ isOpen, toggleSidebar }) => {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/compras">
+            <Link to="/ofertas">
             <Sidebar.Item icon={HiReceiptTax } className='hover:bg-custom'>Ofertas</Sidebar.Item>
             </Link>
 

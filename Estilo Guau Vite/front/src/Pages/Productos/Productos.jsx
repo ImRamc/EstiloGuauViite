@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
-import Footer from "../../Components/Footer/Footer";
+import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
 import { UserContext } from '../../Context/UserContext';
 
@@ -116,9 +116,10 @@ const Productos = () => {
             </tbody>
           </table>
         </div>
-      </div>
-      
-       <Footer />
+      </div>      
+       <div className="m-10">
+       <FooterAdmin />
+       </div>
     </div>
   );
 };
