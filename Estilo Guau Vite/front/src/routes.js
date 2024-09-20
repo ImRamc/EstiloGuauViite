@@ -94,13 +94,15 @@ const RoutesComponent = () => {
         <Route
           path="/DetalleProducto/:idProducto"
           element={
-            idRol && (idRol === 3 || idRol === 2) ? (
+            idRol && (idRol === 3 || idRol === 2 || idRol ===1) ? (
               <DetalleProducto />
             ) : (
               <Navigate to="/Login" />
             )
           }
         />
+ 
+
         <Route
           path="/PerfilUsuario"
           element={
