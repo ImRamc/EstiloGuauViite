@@ -1,26 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import NavbarAdmin from '../../Components/Navbar/NavbarAdmin';
 import FooterAdmin from "../../Components/Footer/FooterAdmin";
 import Sidebar from '../../Components/Sidebar/Sidebar';
+import { UserContext } from '../../Context/UserContext';
 
 const Ofertas = () => {
+  const { userData } = useContext(UserContext);
+  const { idRol, idUsuario } = userData; // Obtener idRol e idUsuario
   const [cupones, setCupones] = useState([]);
 
+  // useEffect para obtener cupones dependiendo del rol
   useEffect(() => {
+    const obtenerCupones = async () => {
+      try {
+        let url;
+        if (idRol === 2) {
+          url = `http://localhost:3001/cuponesxus/${idUsuario}`; // Ruta para idRol 2
+        } else if (idRol === 3) {
+          url = `http://localhost:3001/cupones`; // Ruta diferente para idRol 3
+        }
+
+        const response = await axios.get(url);
+        setCupones(response.data);
+      } catch (error) {
+        console.error('Error al obtener los cupones:', error);
+      }
+    };
+
     obtenerCupones();
-  }, []);
+  }, [idRol, idUsuario]); // Dependencias actualizadas para que se ejecute al cambiar idRol
 
-  const obtenerCupones = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/cupones');
-      setCupones(response.data);
-    } catch (error) {
-      console.error('Error al obtener los cupones:', error);
-    }
-  };
-
+  // Función para eliminar cupon
   const eliminarCupon = async (idCupon) => {
     try {
       await axios.delete(`http://localhost:3001/cupones/${idCupon}`);
@@ -30,11 +42,12 @@ const Ofertas = () => {
     }
   };
 
+  // Función para formatear la fecha
   const formatDate = (dateString) => {
     if (!dateString) return ''; // Maneja casos de fecha nula o indefinida
     const date = new Date(dateString);
     return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-  };  
+  };
 
   return (
     <div className="">

@@ -72,7 +72,7 @@ const Cupones = () => {
                 <thead className="bg-custom text-black text-medium">
                   <tr>
                     <th className="py-3 px-4 text-center border border-white-900">Descuento</th>
-                    <th className="py-3 px-4 text-center border border-white-900">CUPON</th>
+                    <th className="py-3 px-4 text-center border border-white-900">Nombre cupón</th>
                     <th className="py-3 px-4 text-center border border-white-900">Fecha Registro</th>
                     <th className="py-3 px-4 text-center border border-white-900">Vigencia</th>
                     <th className="py-3 px-4 text-center border border-white-900">Status</th>

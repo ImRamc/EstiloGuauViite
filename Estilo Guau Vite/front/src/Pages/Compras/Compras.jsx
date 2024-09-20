@@ -6,7 +6,7 @@ import { UserContext } from '../../Context/UserContext';
 
 const Compras = () => {
     const { userData } = useContext(UserContext);
-    const { idRol } = userData;
+    const { idRol, idUsuario } = userData;
     const [compras, setCompras] = useState([]);
     const [clientesRecientes, setClientesRecientes] = useState([]);
 
@@ -16,7 +16,7 @@ const Compras = () => {
       try {
         let url;
         if (idRol === 2) {
-          url = `http://localhost:3001/comprasxus/${idRol}`; // Ruta para idRol 2
+          url = `http://localhost:3001/comprasxus/${idUsuario}`; // Ruta para idRol 2
         } else if (idRol === 3) {
           url = `http://localhost:3001/compras`; // Ruta diferente para idRol 3
         }
