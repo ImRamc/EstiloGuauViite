@@ -20,6 +20,10 @@ import Usuarios from './Pages/Usuarios/Usuarios';
 import FormularioUsuario from './Pages/Usuarios/formulariousuario';
 import EditarUsuario from './Pages/Usuarios/EditarUsuario';
 import Suscripciones from './Pages/Suscripciones/Suscripciones';
+import Suscripcion from './Pages/Suscripcion/Suscripcion';
+import FormularioSub from './Pages/Suscripcion/FormularioSub';
+import EditarSub from './Pages/Suscripcion/EditarSub';
+
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -180,6 +184,38 @@ const RoutesComponent = () => {
             )
           }
         />
+          <Route
+          path="/Suscripcion"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <Suscripcion />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        
+        <Route
+          path="/Suscripcion/formulario"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <FormularioSub />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+        <Route
+          path="/Suscripcion/editar/:id"
+          element={
+            idRol && (idRol === 3 || idRol === 2) ? (
+              <EditarSub />
+            ) : (
+              <Navigate to="/Login" />
+            )
+          }
+        />
+
        
 
         {/* Ruta por defecto */}
