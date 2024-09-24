@@ -57,6 +57,7 @@ const Graficas = () => {
       // Función para obtener ventas mensuales
       try {
       const response = await axios.get(`http://localhost:3001/ventas/mensuales/${userData.idUsuario}`);
+      //console.log(userData.idUsuario)
       setVentasMensuales(response.data);
       //console.log(response.data)
     } catch (error) {
@@ -108,7 +109,7 @@ const Graficas = () => {
       const fetchProductosMasVendidos = async () => {
         try {
           const response = await axios.get(`http://localhost:3001/mas-vendidos/${userData.idUsuario}`);
-          console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
+          //console.log('Datos recibidos:', response.data); // Verifica los datos recibidos desde la API
           
           setProductosMasVendidos(response.data);
         } catch (error) {

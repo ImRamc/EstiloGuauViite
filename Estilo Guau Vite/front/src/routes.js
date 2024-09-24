@@ -1,3 +1,4 @@
+//#region IMPORTS
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { UserContext } from './Context/UserContext'; // Asegúrate de importar UserContext correctamente
@@ -22,9 +23,14 @@ import EditarUsuario from './Pages/Usuarios/EditarUsuario';
 import Ofertas from './Pages/Ofertas/Ofertas';
 import EditarOferta from './Pages/Ofertas/EditarOfertas';
 import FormularioOferta from './Pages/Ofertas/FormularioOfertas';
-import Suscripcion from './Pages/Suscripcion/Suscripcion';
 import FormSub from './Pages/Suscripcion/FormSub';
 import NewSub from './Pages/Suscripcion/NewSub';
+import Suscripciones from './Pages/Suscripciones/Suscripciones';
+import Suscripcion from './Pages/Suscripcion/Suscripcion';
+import FormularioSub from './Pages/Suscripcion/FormularioSub';
+import EditarSub from './Pages/Suscripcion/EditarSub';
+
+//#endregion
 
 const RoutesComponent = () => {
   const { userData } = useContext(UserContext);
@@ -38,12 +44,13 @@ const RoutesComponent = () => {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Tienda" element={<Tienda />} />
+        <Route path="/Suscripciones" element={<Suscripciones />} />
 
         {/* Rutas protegidas por rol */}
         <Route
           path="/Compras"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Compras />
             ) : (
               <Navigate to="/Login" />
@@ -53,7 +60,7 @@ const RoutesComponent = () => {
         <Route
           path="/Dashboard"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Dashboard />
             ) : (
               <Navigate to="/Login" />
@@ -63,7 +70,7 @@ const RoutesComponent = () => {
         <Route
           path="/Productos"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Productos />
             ) : (
               <Navigate to="/Login" />
@@ -73,7 +80,7 @@ const RoutesComponent = () => {
         <Route
           path="/productos/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormularioProducto />
             ) : (
               <Navigate to="/Login" />
@@ -83,7 +90,7 @@ const RoutesComponent = () => {
         <Route
           path="/productos/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarProducto />
             ) : (
               <Navigate to="/Login" />
@@ -94,7 +101,7 @@ const RoutesComponent = () => {
         <Route
           path="/DetalleProducto/:idProducto"
           element={
-            idRol && idRol === 1 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <DetalleProducto />
             ) : (
               <Navigate to="/Login" />
@@ -125,7 +132,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Usuarios />
             ) : (
               <Navigate to="/Login" />
@@ -136,7 +143,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormularioUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -146,7 +153,7 @@ const RoutesComponent = () => {
         <Route
           path="/usuarios/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarUsuario />
             ) : (
               <Navigate to="/Login" />
@@ -157,7 +164,7 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Cupones />
             ) : (
               <Navigate to="/Login" />
@@ -168,7 +175,7 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormularioCupon />
             ) : (
               <Navigate to="/Login" />
@@ -178,7 +185,7 @@ const RoutesComponent = () => {
         <Route
           path="/Cupones/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarCupon />
             ) : (
               <Navigate to="/Login" />
@@ -189,7 +196,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <Ofertas />
             ) : (
               <Navigate to="/Login" />
@@ -200,7 +207,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas/formulario"
           element={
-            idRol && idRol === 2 ? (
+            idRol &&(idRol === 3 || idRol === 2) ? (
               <FormularioOferta />
             ) : (
               <Navigate to="/Login" />
@@ -211,7 +218,7 @@ const RoutesComponent = () => {
         <Route
           path="/Ofertas/editar/:id"
           element={
-            idRol && idRol === 2 ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <EditarOferta />
             ) : (
               <Navigate to="/Login" />
@@ -223,7 +230,7 @@ const RoutesComponent = () => {
         <Route
           path="/Suscripcion"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 3|| idRol === 2) ? (
               <Suscripcion />
             ) : (
               <Navigate to="/Login" />
@@ -234,7 +241,7 @@ const RoutesComponent = () => {
         <Route
           path="/suscripcion/form"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <FormSub  />
             ) : (
               <Navigate to="/Login" />
@@ -245,7 +252,7 @@ const RoutesComponent = () => {
         <Route
           path="/NewSub"
           element={
-            idRol && (idRol === 1 || idRol === 2) ? (
+            idRol && (idRol === 3 || idRol === 2) ? (
               <NewSub  />
             ) : (
               <Navigate to="/Login" />

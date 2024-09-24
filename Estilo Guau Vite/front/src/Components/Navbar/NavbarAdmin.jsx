@@ -13,7 +13,7 @@ function classNames(...classes) {
 
 const NavbarAdmin = () => {
   const { userData, logout } = useContext(UserContext);
-  const { idUsuario } = userData;
+  const { idUsuario, idRol } = userData;
 
 
   const handleLogout = () => {
@@ -87,8 +87,14 @@ const NavbarAdmin = () => {
                   )}
                 </Dropdown.Item>
 
-                  {/**Panel de administracion */}
-                <Dropdown.Item className="hover:bg-custom">Dashboard</Dropdown.Item>
+                 {/**Panel de administracion */}
+                  <Dropdown.Item className="hover:bg-custom">
+                    <Link
+                      to="/dashboard"
+                    >
+                      Dashboard
+                    </Link>
+                  </Dropdown.Item>
 
                 {/**Servicios */}
                 <Dropdown.Item className="hover:bg-custom">

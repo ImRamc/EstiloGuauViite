@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '12345',
   database: 'bdestiloguau'
 });
 
@@ -144,23 +144,28 @@ app.get('/usuarioget/:idUsuario', (req, res) => {
   });
 });
 
-app.get('/compras/:idUsuario', (req, res) => {
+app.get('/comprasxus/:idUsuario', (req, res) => {
   const query = `
-    SELECT
-    p.descripcion AS descripcion_producto,
-    p.precio,
-    p.foto,
-    t.talla  -- Agregamos la columna de talla
-FROM
-    compra c
+SELECT 
+    producto.producto AS nombre_producto, 
+    producto.descripcion, 
+    producto.precio,
+    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
+    tallas.talla,
+    compra.cantidad_producto,
+    compra.idUsuario,
+    compra.idCompra,
+    usuario.nombre as cliente
+FROM 
+    compra 
+JOIN 
+    producto ON compra.idProducto = producto.idProducto
 JOIN
-    producto p ON c.idProducto = p.idProducto
+    tallas  ON producto.idTalla = tallas.idTalla
 JOIN
-    usuario u ON c.idUsuario = u.idUsuario
-JOIN
-    tallas t ON p.idTalla = t.idTalla  -- Hacemos el JOIN con la tabla de tallas
-WHERE
-    c.idUsuario = ?;
+    usuario ON compra.idUsuario = usuario.idUsuario
+WHERE 
+    producto.idUsuario = ?
   `;
 
   // Ejecutar la consulta con el idUsuario proporcionado
@@ -174,6 +179,7 @@ WHERE
     }
   });
 });
+
 
 
 
@@ -801,6 +807,43 @@ app.get('/ventas/mensuales', (req, res) => {
   });
 });
 
+
+//Ventas mensuales por IDUsuario
+app.get('/ventas/mensuales/:idUsuario', (req, res) => {
+  // Obtener el año y mes actual
+  const fechaActual = new Date();
+  const anioActual = fechaActual.getFullYear();
+  const mesActual = fechaActual.getMonth() + 1; // Los meses en JavaScript son base 0 (enero = 0), por lo que sumamos 1
+
+  // Consulta SQL corregida
+  const query = `
+SELECT 
+  YEAR(fecha_compra) AS anio, 
+  MONTH(fecha_compra) AS mes, 
+  SUM(precio * cantidad_producto) AS total_ventas
+FROM 
+  compra
+JOIN 
+  producto ON compra.idProducto = producto.idProducto
+WHERE 
+  YEAR(fecha_compra) = ? 
+  AND MONTH(fecha_compra) = ? 
+  AND producto.idUsuario = ?
+GROUP BY 
+  YEAR(fecha_compra), 
+  MONTH(fecha_compra);
+  `;
+
+  // Ejecutar la consulta con los parámetros correctos
+  connection.query(query, [anioActual, mesActual, req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 // Ventas de la semana
 app.get('/ventas/semana', (req, res) => {
   const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
@@ -822,6 +865,33 @@ app.get('/ventas/semana', (req, res) => {
   });
 });
 
+// Ventas de la semana x IDUSUARIO
+app.get('/ventas/semana/:idUsuario', (req, res) => {
+  const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
+  const finSemana = moment().endOf('week').format('YYYY-MM-DD');
+
+  const query = `
+SELECT 
+  SUM(precio * cantidad_producto) AS total_ventas_semana
+FROM 
+  compra
+JOIN 
+  producto ON compra.idProducto = producto.idProducto
+WHERE 
+  fecha_compra BETWEEN ? AND ?
+  AND producto.idUsuario = ?
+
+  `;
+
+  connection.query(query, [inicioSemana, finSemana, req.params.idUsuario], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 // Ventas del día
 app.get('/ventas/dia', (req, res) => {
   const fechaHoy = moment().format('YYYY-MM-DD');
@@ -834,6 +904,31 @@ app.get('/ventas/dia', (req, res) => {
   `;
 
   connection.query(query, [fechaHoy], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Ventas del día x idUsuario
+app.get('/ventas/dia/:idUsuario', (req, res) => {
+  const fechaHoy = moment().format('YYYY-MM-DD');
+
+  const query = `
+SELECT 
+  SUM(precio * cantidad_producto) AS total_ventas_dia
+FROM 
+  compra
+JOIN 
+  producto ON compra.idProducto = producto.idProducto
+WHERE 
+  fecha_compra = ?
+  AND producto.idUsuario = ?
+  `;
+
+  connection.query(query, [fechaHoy, req.params.idUsuario ], (error, results) => {
     if (error) {
       res.status(500).json({ message: error.message });
     } else {
@@ -910,6 +1005,53 @@ LIMIT 5;
   `;
 
   connection.query(query, [anioActual, mesActual], (error, results) => {
+    if (error) {
+      console.error('Error en la consulta:', error);
+      res.status(500).json({ message: 'Error en la consulta' });
+    } else {
+      //console.log('Resultados de consulta:', results);
+
+      if (results.length === 0) {
+        res.status(404).json({ message: 'Productos no encontrados' });
+      } else {
+        res.json(results);
+      }
+    }
+  });
+});
+
+//Productos más vendidos x idUsuario
+app.get('/mas-vendidos/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+  const fechaActual = new Date();
+  const anioActual = fechaActual.getFullYear();
+  const mesActual = fechaActual.getMonth() + 1; // Sumamos 1 porque los meses van de 0 a 11 en JavaScript
+
+  const query = `SELECT 
+    producto.producto AS nombre_producto, 
+    producto.descripcion, 
+    producto.precio, 
+    SUBSTRING_INDEX(producto.foto, ',', 1) AS primera_foto,
+    SUM(compra.cantidad_producto) AS total_vendido
+FROM 
+    compra
+JOIN 
+    producto ON compra.idProducto = producto.idProducto
+WHERE 
+    producto.idUsuario = ?  
+    AND YEAR(compra.fecha_compra) = ?
+    AND MONTH(compra.fecha_compra) = ?
+GROUP BY 
+    producto.producto, 
+    producto.descripcion, 
+    producto.precio, 
+    primera_foto
+ORDER BY 
+    total_vendido DESC
+LIMIT 5;
+  `;
+
+  connection.query(query, [idUsuario, anioActual, mesActual], (error, results) => {
     if (error) {
       console.error('Error en la consulta:', error);
       res.status(500).json({ message: 'Error en la consulta' });

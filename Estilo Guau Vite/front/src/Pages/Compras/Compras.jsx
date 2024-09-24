@@ -26,6 +26,7 @@ const Compras = () => {
           throw new Error('No se pudieron obtener las compras');
         }
         const data = await response.json();
+        console.log(data)
         setCompras(data);
       } catch (error) {
         console.error('Error al obtener las compras:', error);
